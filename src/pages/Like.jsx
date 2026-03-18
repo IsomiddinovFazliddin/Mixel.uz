@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useContext } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Product from "../components/Product";
+import { DataContext } from "../App";
 
 function Like() {
+  const { likeData } = useContext(DataContext);
+
   return (
     <div>
       <div className="container py-5 mx-auto">
@@ -25,12 +28,9 @@ function Like() {
           Favorites
         </h4>
         <div className="grid px-5 md:px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-13">
-          <Product />
-          <Product />
-          <Product />
-          <Product />
-          <Product />
-          <Product />
+          {likeData?.map((item, i) => {
+            return <Product key={i} item={item.product} />;
+          })}
         </div>
       </div>
     </div>

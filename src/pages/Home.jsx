@@ -17,8 +17,13 @@ import Marquee from "react-fast-marquee";
 import { Button } from "@mui/material";
 import Box from "../components/Box";
 import { DataContext } from "../App";
+import { useNavigate } from "react-router-dom";
 
 function Home() {
+  const { categoryData, productData, brand, gallery } = useContext(DataContext);
+
+  const navigate = useNavigate();
+
   return (
     <div>
       <header className="py-3">
@@ -36,162 +41,17 @@ function Home() {
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper flex"
         >
-          <SwiperSlide>
-            <div className="container mx-auto bg-[#FAFAFA] flex flex-col md:flex-row items-center justify-between gap-5">
-              <div className="w-full md:w-[45%]">
-                <img className="w-full" src="/imgs/heroImg.png" alt="" />
-              </div>
-              <div className="w-full md:w-[42%] text-center md:text-start">
-                <h1 className="font-bold text-[26px] sm:text-[32px] md:text-[40px] text-[#D33636] uppercase">
-                  Cashback
-                </h1>
-                <h3 className="font-medium text-[16px] sm:text-[18px] md:text-[24px] text-[#040404] uppercase mb-5 md:mb-10">
-                  from every purchase
-                </h3>
-                <div className="flex gap-8 flex-col md:flex-row">
-                  <h4 className="font-medium text-[15px] md:text-[18px] text-[#040404]">
-                    Now shopping has become even <br /> more profitable (yoki
-                    more rewarding).
-                  </h4>
-                  <img
-                    className="w-25 rounded-md cursor-pointer hidden md:flex"
-                    src="/imgs/cashback.png"
-                    alt=""
-                  />
+          {gallery?.map((item, i) => {
+            return (
+              <SwiperSlide>
+                <div className="container mx-auto bg-[#FAFAFA] flex flex-col md:flex-row items-center justify-between gap-5">
+                  <div className="w-full h-90">
+                    <img className="w-full h-full object-cover" src={item?.image} alt="" />
+                  </div>
                 </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          {/* <SwiperSlide>
-            <div className="container mx-auto bg-[#FAFAFA] flex flex-wrap items-center justify-between gap-5">
-              <div className="w-[45%]">
-                <img className="w-full" src="/imgs/heroImg.png" alt="" />
-              </div>
-              <div className="w-[42%]">
-                <h1 className="font-bold text-[40px] text-[#D33636] uppercase">
-                  Cashback
-                </h1>
-                <h3 className="font-medium text-[24px] text-[#040404] uppercase mb-10">
-                  from every purchase
-                </h3>
-                <div className="flex gap-8">
-                  <h4 className="font-medium text-[18px] text-[#040404]">
-                    Now shopping has become even <br /> more profitable (yoki
-                    more rewarding).
-                  </h4>
-                  <img
-                    className="w-25 rounded-md cursor-pointer"
-                    src="/imgs/cashback.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="container mx-auto bg-[#FAFAFA] flex flex-wrap items-center justify-between gap-5">
-              <div className="w-[45%]">
-                <img className="w-full" src="/imgs/heroImg.png" alt="" />
-              </div>
-              <div className="w-[42%]">
-                <h1 className="font-bold text-[40px] text-[#D33636] uppercase">
-                  Cashback
-                </h1>
-                <h3 className="font-medium text-[24px] text-[#040404] uppercase mb-10">
-                  from every purchase
-                </h3>
-                <div className="flex gap-8">
-                  <h4 className="font-medium text-[18px] text-[#040404]">
-                    Now shopping has become even <br /> more profitable (yoki
-                    more rewarding).
-                  </h4>
-                  <img
-                    className="w-25 rounded-md cursor-pointer"
-                    src="/imgs/cashback.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="container mx-auto bg-[#FAFAFA] flex flex-wrap items-center justify-between gap-5">
-              <div className="w-[45%]">
-                <img className="w-full" src="/imgs/heroImg.png" alt="" />
-              </div>
-              <div className="w-[42%]">
-                <h1 className="font-bold text-[40px] text-[#D33636] uppercase">
-                  Cashback
-                </h1>
-                <h3 className="font-medium text-[24px] text-[#040404] uppercase mb-10">
-                  from every purchase
-                </h3>
-                <div className="flex gap-8">
-                  <h4 className="font-medium text-[18px] text-[#040404]">
-                    Now shopping has become even <br /> more profitable (yoki
-                    more rewarding).
-                  </h4>
-                  <img
-                    className="w-25 rounded-md cursor-pointer"
-                    src="/imgs/cashback.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="container mx-auto bg-[#FAFAFA] flex flex-wrap items-center justify-between gap-5">
-              <div className="w-[45%]">
-                <img className="w-full" src="/imgs/heroImg.png" alt="" />
-              </div>
-              <div className="w-[42%]">
-                <h1 className="font-bold text-[40px] text-[#D33636] uppercase">
-                  Cashback
-                </h1>
-                <h3 className="font-medium text-[24px] text-[#040404] uppercase mb-10">
-                  from every purchase
-                </h3>
-                <div className="flex gap-8">
-                  <h4 className="font-medium text-[18px] text-[#040404]">
-                    Now shopping has become even <br /> more profitable (yoki
-                    more rewarding).
-                  </h4>
-                  <img
-                    className="w-25 rounded-md cursor-pointer"
-                    src="/imgs/cashback.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide>
-          <SwiperSlide>
-            <div className="container mx-auto bg-[#FAFAFA] flex flex-wrap items-center justify-between gap-5">
-              <div className="w-[45%]">
-                <img className="w-full" src="/imgs/heroImg.png" alt="" />
-              </div>
-              <div className="w-[42%]">
-                <h1 className="font-bold text-[40px] text-[#D33636] uppercase">
-                  Cashback
-                </h1>
-                <h3 className="font-medium text-[24px] text-[#040404] uppercase mb-10">
-                  from every purchase
-                </h3>
-                <div className="flex gap-8">
-                  <h4 className="font-medium text-[18px] text-[#040404]">
-                    Now shopping has become even <br /> more profitable (yoki
-                    more rewarding).
-                  </h4>
-                  <img
-                    className="w-25 rounded-md cursor-pointer"
-                    src="/imgs/cashback.png"
-                    alt=""
-                  />
-                </div>
-              </div>
-            </div>
-          </SwiperSlide> */}
+              </SwiperSlide>
+            );
+          })}
         </Swiper>
       </header>
 
@@ -207,14 +67,9 @@ function Home() {
               </button>
             </div>
             <div className="card grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-5">
-              <Box />
-              <Box />
-              <Box />
-              <Box />
-              <Box />
-              <Box />
-              <Box />
-              <Box />
+              {productData?.map((item, i) => {
+                return <Product key={i} item={item} />;
+              })}
             </div>
           </div>
         </section>
@@ -225,54 +80,28 @@ function Home() {
             </h4>
             <Marquee pauseOnHover={true} autoFill={true} speed={50}>
               <div className="flex items-center py-6">
-                <div className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5">
-                  <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
-                    Computers
-                  </h4>
-                  <div className="imgs">
-                    <img
-                      className="w-full h-[90%]"
-                      src="/imgs/categoryImg.png"
-                      alt=""
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5">
-                  <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
-                    Computers
-                  </h4>
-                  <div className="imgs">
-                    <img
-                      className="w-full h-[90%]"
-                      src="/imgs/categoryImg.png"
-                      alt=""
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5">
-                  <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
-                    Computers
-                  </h4>
-                  <div className="imgs">
-                    <img
-                      className="w-full h-[90%]"
-                      src="/imgs/categoryImg.png"
-                      alt=""
-                    />
-                  </div>
-                </div>
-                <div className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5">
-                  <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
-                    Computers
-                  </h4>
-                  <div className="imgs">
-                    <img
-                      className="w-full h-[90%]"
-                      src="/imgs/categoryImg.png"
-                      alt=""
-                    />
-                  </div>
-                </div>
+                {categoryData?.map((item, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5 cursor-pointer"
+                      onClick={() => {
+                        navigate("/filter");
+                      }}
+                    >
+                      <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
+                        Computers
+                      </h4>
+                      <div className="imgs w-38 h-34 object-cover">
+                        <img
+                          className="w-full h-[90%]"
+                          src={item?.image}
+                          alt=""
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </Marquee>
           </div>
@@ -418,14 +247,9 @@ function Home() {
               </button>
             </div>
             <div className="card grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-5">
-              <Product />
-              <Product />
-              <Product />
-              <Product />
-              <Product />
-              <Product />
-              <Product />
-              <Product />
+              {productData?.map((item, i) => {
+                return <Product key={i} item={item} />;
+              })}
             </div>
           </div>
         </section>
@@ -458,12 +282,9 @@ function Home() {
                 </div>
               </div>
               <div className="card w-full grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 py-5">
-                <Product />
-                <Product />
-                <Product />
-                <Product />
-                <Product />
-                <Product />
+                {productData?.map((item, i) => {
+                  return <Product key={i} item={item} />;
+                })}
               </div>
             </div>
           </div>
@@ -477,11 +298,18 @@ function Home() {
                 <IoArrowForward className="text-[#909090] text-[20px] cursor-pointer" />
               </div>
             </div>
-            <Marquee pauseOnHover={true} autoFill={true} speed={50}>
-              <div className="flex items-center py-6">
-                <div className="w-60 flex justify-center p-5 border border-[#E0E0E0] rounded-sm mr-5 transition-all duration-500 ease-in-out hover:shadow-lg">
-                  <img src="/imgs/brand.png" alt="" />
-                </div>
+            <Marquee pauseOnHover={false} autoFill={true} speed={70}>
+              <div className="flex items-center py-6 gap-10">
+                {brand?.map((item, i) => {
+                  return (
+                    <div
+                      key={i}
+                      className="w-60 flex justify-center p-5 border border-[#E0E0E0] rounded-sm mr-5 transition-all duration-500 ease-in-out hover:shadow-lg"
+                    >
+                      <img className="w-full " src={item?.image} alt="" />
+                    </div>
+                  );
+                })}
               </div>
             </Marquee>
           </div>

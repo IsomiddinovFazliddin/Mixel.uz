@@ -1,17 +1,47 @@
 import { Button } from "@mui/material";
-import React, { useContext } from "react";
-import { FaRegHeart } from "react-icons/fa";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import { FaRegHeart, FaUser } from "react-icons/fa";
 import { FiSearch, FiShoppingCart, FiUser } from "react-icons/fi";
 import { HiOutlineMicrophone } from "react-icons/hi";
 import { IoCallOutline, IoLocationOutline } from "react-icons/io5";
 import { RiScalesLine } from "react-icons/ri";
 import { TfiMenuAlt } from "react-icons/tfi";
 import { DataContext } from "../App";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getToken, removeToken } from "../services/token";
+import { TbLogout2 } from "react-icons/tb";
 
 function Navbar() {
-  const { categoryModal, setCategoryModal } = useContext(DataContext);
+  const {
+    categoryModal,
+    setCategoryModal,
+    categoryData,
+    tokenTitle,
+    likeData,
+    setTokenTitle,
+    setLikeData,
+    cartData,
+  } = useContext(DataContext);
+  const [modal, setModal] = useState(false);
 
+  const modalRef = useRef(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handlClick = (e) => {
+      if (modalRef.current && !modalRef.current.contains(e.target)) {
+        setModal(false);
+      }
+    };
+
+    if (modal) {
+      document.addEventListener("mousedown", handlClick);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handlClick);
+    };
+  }, [modal]);
   return (
     <nav className="w-full bg-white shadow-sm">
       {/* 1. TOP NAVBAR (Desktop) */}
@@ -90,7 +120,48 @@ function Navbar() {
 
           {/* DESKTOP ACTIONS (>= 768px bo'lganda ko'rinadi) */}
           <div className="hidden md:flex items-center gap-5">
-            <ActionIcon icon={<FiUser />} label="Login" to="/signup" />
+            {getToken() || tokenTitle ? (
+              <div className="relative" ref={modalRef}>
+                <div
+                  className=""
+                  onClick={() => {
+                    setModal(!modal);
+                  }}
+                >
+                  <ActionIcon icon={<FiUser />} label="User" />
+                </div>
+                {modal ? (
+                  <div className="modal absolute right-0 top-10 z-50 w-40 bg-gray-200 rounded-md p-2">
+                    <Link
+                      to={"/profil"}
+                      className="flex items-center gap-3 font-medium text-black transition-all duration-300 ease-in-out hover:bg-gray-400 hover:text-white w-full px-2 py-1 rounded-md mb-2"
+                      onClick={() => {
+                        setModal(false);
+                      }}
+                    >
+                      <FaUser /> Profile
+                    </Link>
+                    <button
+                      onClick={() => {
+                        removeToken();
+                        setModal(false);
+                        setLikeData([]);
+                        setTokenTitle(null);
+                        navigate("/");
+                      }}
+                      to={"/"}
+                      className="flex items-center gap-3 font-medium text-white transition-all duration-300 ease-in-out bg-red-500 hover:bg-red-400 hover:text-white w-full px-2 py-1 rounded-md mb-2"
+                    >
+                      <TbLogout2 className="text-[18px]" /> Logout
+                    </button>
+                  </div>
+                ) : (
+                  ""
+                )}
+              </div>
+            ) : (
+              <ActionIcon icon={<FiUser />} label="Login" to="/signup" />
+            )}
             <ActionIcon
               icon={<RiScalesLine />}
               label="Compare"
@@ -101,13 +172,13 @@ function Navbar() {
               icon={<FaRegHeart />}
               label="Favorites"
               to="/like"
-              count={12}
+              count={likeData.length}
             />
             <ActionIcon
               icon={<FiShoppingCart />}
               label="Basket"
               to="/cart"
-              count={2}
+              count={cartData.length}
             />
           </div>
         </div>
@@ -139,39 +210,38 @@ function Navbar() {
       {/* 3. CATEGORY BAR */}
       <div className="border-t border-gray-100 bg-white">
         <div className="container mx-auto flex items-center gap-10 py-2 px-4">
-          <Button
-            onClick={() => setCategoryModal(!categoryModal)}
-            variant="contained"
-            sx={{
-              backgroundColor: "#ED3729",
-              minWidth: "45px",
-              height: "40px",
-              borderRadius: "6px",
-              "&:hover": { backgroundColor: "#d32f2f" },
-            }}
-          >
-            <TfiMenuAlt size={20} />
-            <span className="hidden md:inline ml-2 font-semibold">
-              Categories
-            </span>
-          </Button>
+          <div className="w-full md:w-auto flex justify-center">
+            <Button
+              onClick={() => setCategoryModal(!categoryModal)}
+              variant="contained"
+              className="w-full md:w-auto"
+              sx={{
+                backgroundColor: "#ED3729",
+                minWidth: "45px",
+                height: "40px",
+                borderRadius: "6px",
+                "&:hover": { backgroundColor: "#d32f2f" },
+              }}
+            >
+              <TfiMenuAlt size={20} />
+              <span className="ml-2 font-semibold">Categories</span>
+            </Button>
+          </div>
 
-          <ul className="flex-1 flex items-center justify-between gap-4 overflow-x-auto no-scrollbar whitespace-nowrap text-[14px] font-medium text-gray-700">
-            {[
-              "Our Stores",
-              "Phones",
-              "Tablets",
-              "Laptops",
-              "Components",
-              "Networking",
-            ].map((cat) => (
-              <li
-                key={cat}
-                className="hover:text-Primary cursor-pointer transition-colors"
-              >
-                {cat}
-              </li>
-            ))}
+          <ul className="flex-1 hidden md:flex flex-wrap items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-[14px] font-medium text-gray-700">
+            {categoryData?.map((item, i) => {
+              return (
+                <li
+                  key={i}
+                  className="hover:text-Primary cursor-pointer transition-colors"
+                  onClick={() => {
+                    navigate("/filter");
+                  }}
+                >
+                  {item?.name}
+                </li>
+              );
+            })}
           </ul>
         </div>
       </div>

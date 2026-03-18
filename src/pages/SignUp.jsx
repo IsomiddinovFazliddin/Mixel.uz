@@ -4,83 +4,119 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
+import { registerFunction } from "../services";
+import { toast } from "react-toastify";
 
 function SignUp() {
-  const [showPassword, setSHowPassword] = useState(false);
-  const [name, setName] = useState("");
+  const [showPassword, setShowPassword] = useState(false); // Boshlang'ich qiymat berildi
+  const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    window.scrollTo({
-      top: "0px",
-      behavior: "smooth",
-    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
+
   return (
-    <>
-      <div className="py-10">
-        <div className="container mx-auto flex items-center justify-between gap-10">
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw]  w-[60%] h-150 bg-[#CBE4E8] rounded-sm">
-            <img className="w-full h-full" src="/imgs/loginImg.png" alt="" />
-          </div>
-          <div className="w-[40%] pl-10">
-            <h2 className="font-Inter font-medium text-[36px] leading-7.5 tracking-[4%] text-MainColor mb-5 ">
+    <div className="py-6 md:py-10">
+      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-10 overflow-hidden">
+        
+        {/* 1. Rasm qismi - Mobilda yashiriladi yoki tepaga chiqadi */}
+        <div className="w-full md:w-[55%] lg:w-[60%] h-75 md:h-125 lg:h-150 bg-[#CBE4E8] rounded-r-md overflow-hidden ">
+          <img 
+            className="w-full h-full object-contain md:object-cover" 
+            src="/imgs/loginImg.png" 
+            alt="SignUp Illustration" 
+          />
+        </div>
+
+        {/* 2. Form qismi */}
+        <div className="w-full md:w-[45%] lg:w-[35%] px-4 sm:px-10 md:pl-0">
+          <div className="max-w-100 mx-auto md:mx-0">
+            <h2 className="font-Inter font-medium text-[28px] md:text-[36px] leading-tight text-MainColor mb-3 md:mb-5">
               Create an account
             </h2>
-            <h4 className="font-Poppins font-normal text-[16px] leading-6  text-MainColor mb-5">
+            <h4 className="font-Poppins font-normal text-[14px] md:text-[16px] text-MainColor mb-6 md:mb-8">
               Enter your details below
             </h4>
-            <form action="" className="grid gap-5 mb-5">
+
+            <form
+              className="grid gap-5 mb-5"
+              onSubmit={(e) => {
+                e.preventDefault();
+                registerFunction(userName, email, password).then((data) => {
+                  if (data?.id) {
+                    toast.success("Ro'yxatdan o'tdingiz");
+                    navigate("/login");
+                  } else if (data?.username) {
+                    toast.error("Bu foydalanuvchi mavjud");
+                  }
+                });
+              }}
+            >
               <input
-                className="font-Poppins font-normal text-[16px] leading-6 text-MainColor border-b border-[#808080] pb-1 outline-none"
+                onChange={(e) => setUserName(e.target.value)}
+                className="font-Poppins text-[16px] border-b border-[#808080] pb-2 outline-none focus:border-Primary transition-all"
                 type="text"
-                placeholder="Name"
+                placeholder="UserName"
+                value={userName}
                 required
               />
               <input
-                className="font-Poppins font-normal text-[16px] leading-6 text-MainColor border-b border-[#808080] pb-1 outline-none"
+                onChange={(e) => setEmail(e.target.value)}
+                className="font-Poppins text-[16px] border-b border-[#808080] pb-2 outline-none focus:border-Primary transition-all"
                 type="email"
                 placeholder="Email or Phone Number"
+                value={email}
                 required
               />
               <div className="relative">
                 <input
-                  className="w-full font-Poppins font-normal text-[16px] leading-6 text-MainColor border-b border-[#808080] pb-1 outline-none"
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full font-Poppins text-[16px] border-b border-[#808080] pb-2 outline-none focus:border-Primary transition-all"
                   placeholder="Password"
+                  value={password}
                   required
                   type={showPassword ? "text" : "password"}
                 />
-                {showPassword ? (
-                  <FaRegEyeSlash className="absolute right-5 top-[50%] translate-y-[-50%] text-MainColor cursor-pointer" />
-                ) : (
-                  <MdOutlineRemoveRedEye className="absolute right-5 top-[50%] translate-y-[-50%] text-MainColor cursor-pointer" />
-                )}
+                <div 
+                  className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <FaRegEyeSlash size={20} /> : <MdOutlineRemoveRedEye size={20} />}
+                </div>
               </div>
+
               <Button
                 type="submit"
                 sx={{
                   backgroundColor: "#ED3729",
-                  padding: "10px 30px",
+                  padding: "12px",
+                  textTransform: "none",
+                  fontSize: "16px",
+                  borderRadius: "4px",
+                  "&:hover": { backgroundColor: "#d32f2f" }
                 }}
                 variant="contained"
               >
                 Create Account
               </Button>
             </form>
-            <button className="flex items-center justify-center gap-2 w-full mb-5 border border-[#999999] rounded-sm py-2.5 px-5 font-Poppins font-normal text-[16px] leading-6 text-MainColor cursor-pointer">
-              <FcGoogle className="text-[20px]" />
+
+            <button className="flex items-center justify-center gap-3 w-full mb-6 border border-[#999999] rounded-md py-2.5 font-Poppins text-[16px] hover:bg-gray-50 transition-all">
+              <FcGoogle size={22} />
               Sign up with Google
             </button>
-            <div className="flex gap-4 justify-center items-center">
-              <h5 className="font-Poppins font-normal text-[16px] leading-6 text-MainColor">
+
+            <div className="flex gap-2 justify-between items-center">
+              <span className="font-Poppins text-[14px] md:text-[16px] text-gray-600">
                 Already have account?
-              </h5>
+              </span>
               <Link
                 to={"/login"}
-                className="font-Poppins font-medium text-[16px] leading-6 text-MainColor border-b border-[#4D4D4D] cursor-pointer"
+                className="font-Poppins font-medium text-[14px] md:text-[16px] text-MainColor border-b border-MainColor hover:text-Primary transition-colors"
               >
                 Log in
               </Link>
@@ -88,7 +124,7 @@ function SignUp() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

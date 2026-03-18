@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Button,
   FormControl,
@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { DataContext } from "../App";
 
 // Fokus bo'lganda outline rangini o'zgartiruvchi theme
 const theme = createTheme({
@@ -58,6 +59,7 @@ const regions = [
 const cities = ["Toshkent sh.", "Samarqand", "Buxoro", "Andijon", "Namangan"];
 
 function Cart() {
+  const { cartData } = useContext(DataContext);
   const [region, setRegion] = useState("");
   const [city, setCity] = useState("");
 
@@ -100,67 +102,44 @@ function Cart() {
                   </button>
                 </div>
 
-                <div className="card grid gap-5 h-[50vh] overflow-y-auto">
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-5 bg-[#F9F9F9] rounded-2xl border border-gray-100">
-                    <img
-                      className="w-20 h-24 object-contain bg-white rounded-xl p-2 shadow-sm"
-                      src="/imgs/cartImg.png"
-                      alt="Product"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg text-[#202020]">
-                        Galaxy A03 Core 2/32Gb Black
-                      </h4>
+                <div className="card grid gap-5 items-start h-[50vh] overflow-y-auto">
+                  {cartData?.length > 0 ? (
+                    cartData?.map((item, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="flex flex-col sm:flex-row items-center gap-5 p-5 bg-[#F9F9F9] rounded-2xl border border-gray-100"
+                        >
+                          <img
+                            className="w-20 h-24 object-contain bg-white rounded-xl p-2 shadow-sm"
+                            src={item?.main_image}
+                            alt="Product"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-lg text-[#202020]">
+                              {item?.product_name}
+                            </h4>
+                          </div>
+                          <div className="flex items-center justify-between w-full sm:w-auto gap-12 border-t sm:border-t-0 pt-4 sm:pt-0">
+                            <span className="text-gray-400 font-bold text-lg">
+                              {item?.amount}x
+                            </span>
+                            <span className="font-bold text-xl text-[#202020] whitespace-nowrap">
+                              {item?.product_price} cум
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="w-full flex flex-col justify-center items-center">
+                      <img
+                        className="w-90"
+                        src="https://assets-v2.lottiefiles.com/a/6102a4f8-1176-11ee-bcc5-236dd7d5f88b/aK8IKRE5a3.gif"
+                        alt=""
+                      />
                     </div>
-                    <div className="flex items-center justify-between w-full sm:w-auto gap-12 border-t sm:border-t-0 pt-4 sm:pt-0">
-                      <span className="text-gray-400 font-bold text-lg">
-                        1x
-                      </span>
-                      <span className="font-bold text-xl text-[#202020] whitespace-nowrap">
-                        1 334 000 cум
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-5 bg-[#F9F9F9] rounded-2xl border border-gray-100">
-                    <img
-                      className="w-20 h-24 object-contain bg-white rounded-xl p-2 shadow-sm"
-                      src="/imgs/cartImg.png"
-                      alt="Product"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg text-[#202020]">
-                        Galaxy A03 Core 2/32Gb Black
-                      </h4>
-                    </div>
-                    <div className="flex items-center justify-between w-full sm:w-auto gap-12 border-t sm:border-t-0 pt-4 sm:pt-0">
-                      <span className="text-gray-400 font-bold text-lg">
-                        1x
-                      </span>
-                      <span className="font-bold text-xl text-[#202020] whitespace-nowrap">
-                        1 334 000 cум
-                      </span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col sm:flex-row items-center gap-5 p-5 bg-[#F9F9F9] rounded-2xl border border-gray-100">
-                    <img
-                      className="w-20 h-24 object-contain bg-white rounded-xl p-2 shadow-sm"
-                      src="/imgs/cartImg.png"
-                      alt="Product"
-                    />
-                    <div className="flex-1">
-                      <h4 className="font-semibold text-lg text-[#202020]">
-                        Galaxy A03 Core 2/32Gb Black
-                      </h4>
-                    </div>
-                    <div className="flex items-center justify-between w-full sm:w-auto gap-12 border-t sm:border-t-0 pt-4 sm:pt-0">
-                      <span className="text-gray-400 font-bold text-lg">
-                        1x
-                      </span>
-                      <span className="font-bold text-xl text-[#202020] whitespace-nowrap">
-                        1 334 000 cум
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </section>
 

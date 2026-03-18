@@ -1,74 +1,113 @@
 import { Button } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { FaRegEyeSlash } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import { MdOutlineRemoveRedEye } from "react-icons/md";
+import { loginFunction } from "../services";
+import { toast } from "react-toastify";
+import { setToken } from "../services/token";
+import { useNavigate } from "react-router-dom";
+import { DataContext } from "../App";
 
 function Login() {
-  const [showPassword, setShowPassword] = useState();
+  const { setTokenTitle } = useContext(DataContext);
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo({
-      top: "0px",
+      top: 0,
       behavior: "smooth",
     });
   }, []);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    loginFunction(userName, password).then((info) => {
+      if (info?.access) {
+        toast.success("Tizimga kirdingiz");
+        setToken(info?.access);
+        setUserName("");
+        setPassword("");
+        setTokenTitle(info?.access);
+        navigate("/");
+      } else if (info?.detail) {
+        toast.error("Bunday foydalanuvchi mavjud emas");
+      }
+    });
+  };
+
   return (
-    <>
-      <div className="py-10">
-        <div className="container mx-auto flex items-center justify-between gap-10">
-          <div className="relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] w-[60%] h-150 bg-[#CBE4E8] rounded-sm">
-            <img className="w-full h-full" src="/imgs/loginImg.png" alt="" />
-          </div>
-          <div className="w-[40%] pl-10">
-            <h2 className="font-Inter font-medium text-[36px] leading-7.5 tracking-[4%] text-MainColor mb-5">
+    <div className="py-6 md:py-10">
+      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 overflow-hidden">
+        {/* 1. Rasm qismi - barcha ekranlarda moslashuvchan */}
+        <div className="w-full md:w-[55%] lg:w-[60%] h-75 md:h-125 lg:h-150 bg-[#CBE4E8] rounded-r-md overflow-hidden ">
+          <img
+            className="w-full h-full object-contain md:object-cover"
+            src="/imgs/loginImg.png"
+            alt="SignUp Illustration"
+          />
+        </div>
+
+        {/* 2. Login Form qismi */}
+        <div className="w-full md:w-[45%] lg:w-[35%] px-4 sm:px-10 md:pl-5">
+          <div className="max-w-100 mx-auto md:mx-0">
+            <h2 className="font-Inter font-medium text-[28px] md:text-[36px] leading-tight text-MainColor mb-3">
               Log in to Exclusive
             </h2>
-            <h4 className="font-Poppins font-normal text-[16px] leading-6  text-MainColor mb-5">
+            <p className="font-Poppins font-normal text-[16px] text-MainColor mb-8">
               Enter your details below
-            </h4>
-            <form action="" className="grid gap-5 mb-5">
+            </p>
+
+            <form className="grid gap-6" onSubmit={handleSubmit}>
               <input
-                className="font-Poppins font-normal text-[16px] leading-6 text-MainColor border-b border-[#808080] pb-1 outline-none"
-                type="email"
-                placeholder="Email or Phone Number"
+                onChange={(e) => setUserName(e.target.value)}
+                value={userName}
+                className="font-Poppins text-[16px] border-b border-[#808080] pb-2 outline-none focus:border-Primary transition-all"
+                type="text"
+                placeholder="Username"
                 required
               />
+
               <div className="relative">
                 <input
-                  className="w-full font-Poppins font-normal text-[16px] leading-6 text-MainColor border-b border-[#808080] pb-1 outline-none"
+                  onChange={(e) => setPassword(e.target.value)}
+                  value={password}
+                  className="w-full font-Poppins text-[16px] border-b border-[#808080] pb-2 outline-none focus:border-Primary transition-all"
                   placeholder="Password"
                   required
                   type={showPassword ? "text" : "password"}
                 />
-                {showPassword ? (
-                  <FaRegEyeSlash
-                    className="absolute right-5 top-[50%] translate-y-[-50%] text-MainColor cursor-pointer"
-                    onClick={() => {
-                      setShowPassword(!showPassword);
-                    }}
-                  />
-                ) : (
-                  <MdOutlineRemoveRedEye
-                    className="absolute right-5 top-[50%] translate-y-[-50%] text-MainColor cursor-pointer"
-                    onClick={() => {
-                      setShowPassword(!showPassword);
-                    }}
-                  />
-                )}
+                <div
+                  className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-gray-500"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <FaRegEyeSlash size={20} />
+                  ) : (
+                    <MdOutlineRemoveRedEye size={20} />
+                  )}
+                </div>
               </div>
-              <div className="flex items-center justify-between gap-5">
+
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-2">
                 <Button
                   type="submit"
                   sx={{
                     backgroundColor: "#ED3729",
-                    padding: "10px 30px",
+                    padding: "10px 40px",
+                    width: { xs: "100%", sm: "auto" },
+                    textTransform: "none",
+                    fontSize: "16px",
+                    "&:hover": { backgroundColor: "#d32f2f" },
                   }}
                   variant="contained"
                 >
                   Log In
                 </Button>
-                <span className="font-Poppins font-normal text-[16px] leading-6 text-[#DB4444] cursor-pointer">
+
+                <span className="font-Poppins text-[16px] text-[#DB4444] cursor-pointer hover:underline">
                   Forget Password?
                 </span>
               </div>
@@ -76,7 +115,7 @@ function Login() {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

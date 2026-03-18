@@ -3,7 +3,7 @@ import React from "react";
 import { CgFileDocument } from "react-icons/cg";
 import { CiGrid2H } from "react-icons/ci";
 import { FaRegClock } from "react-icons/fa";
-import { FiCreditCard, FiGrid, FiTruck, FiUser } from "react-icons/fi";
+import { FiCreditCard, FiTruck, FiUser } from "react-icons/fi";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoGridOutline } from "react-icons/io5";
 import { LuShoppingCart } from "react-icons/lu";
@@ -14,162 +14,81 @@ const label = { inputProps: { "aria-label": "Switch demo" } };
 
 function Profil() {
   return (
-    <div>
-      <div className="container mx-auto py-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link
-              to={"/"}
-              className="font-normal text-[#626364] text-[16px] cursor-pointer transition-all duration-300 ease-in-out hover:text-Primary"
-            >
-              Home
-            </Link>
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-5">
+        {/* Breadcrumbs & View Switcher */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-2 text-sm md:text-base">
+            <Link to="/" className="text-[#626364] hover:text-Primary transition-colors">Home</Link>
             <IoIosArrowForward className="text-[#626364]" />
-            <Link className="font-normal text-[#626364] text-[16px] cursor-pointer transition-all duration-300 ease-in-out hover:text-Primary">
-              Personal account
-            </Link>
+            <span className="text-Primary font-medium">Personal account</span>
           </div>
-          <div className="flex items-center gap-3">
-            <NavLink
-              to={"/profil"}
-              className={({ isActive }) =>
-                ` text-[20px] transition-all duration-300 ease-in-out cursor-pointer hover:text-Primary ${isActive ? "text-Primary" : "text-[#909090]"}`
-              }
-            >
+          <div className="flex items-center gap-3 self-end sm:self-auto">
+            <NavLink to="/profil" className={({ isActive }) => `text-xl ${isActive ? "text-Primary" : "text-[#909090]"}`}>
               <IoGridOutline />
             </NavLink>
-            <NavLink
-            to={""}
-              className={({ isActive }) =>
-                ` text-[20px] transition-all duration-300 ease-in-out cursor-pointer hover:text-Primary ${isActive ? "text-[#909090]" : "text-[#909090]"}`
-              }
-            >
+            <NavLink to="/list" className="text-xl text-[#909090]">
               <CiGrid2H />
             </NavLink>
           </div>
         </div>
 
-        <div className=" flex items-start gap-5 justify-between py-5">
-          <div className="w-75 border-r border-[#F2F2F2] py-5">
-            <div className="flex items-center gap-3 mb-5">
-              <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7]">
-                <FiUser className="text-[#909090] text-[21px]" />
-              </button>
-              <div className="">
-                <h4 className="font-normal text-[14px] text-[#202020] mb-1">
-                  Fazliddin Isomiddinov
-                </h4>
-                <h4 className="font-normal text-[14px] text-[#202020]">
-                  +998883690201
-                </h4>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* Sidebar - Mobilda gorizontal scroll bo'ladi */}
+          <div className="w-full lg:w-72 lg:border-r border-[#F2F2F2] lg:pr-6">
+            <div className="flex items-center gap-3 mb-6 bg-gray-50 p-3 rounded-lg lg:bg-transparent lg:p-0">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center bg-white border border-gray-200 lg:bg-[#F7F7F7]">
+                <FiUser className="text-[#909090] text-xl" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-sm text-[#202020]">Fazliddin Isomiddinov</h4>
+                <p className="text-xs text-gray-500">+998883690201</p>
               </div>
             </div>
-            <hr className="border border-[#F2F2F2] mb-5" />
-            <div className="flex items-center gap-3 mb-4 p-1 rounded-sm cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-200">
-              <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7]">
-                <LuShoppingCart className="text-[#909090] text-[20px]" />
-              </button>
-              <h4 className="font-normal text-[14px] text-[#202020]">
-                My installments
-              </h4>
-            </div>
-            <div className="flex items-center gap-3 mb-4 p-1 rounded-sm cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-200">
-              <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7]">
-                <CgFileDocument className="text-[#909090] text-[21px]" />
-              </button>
-              <h4 className="font-normal text-[14px] text-[#202020]">
-                Payment history
-              </h4>
-            </div>
-            <div className="flex items-center gap-3 mb-4 p-1 rounded-sm cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-200">
-              <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7]">
-                <FaRegClock className="text-[#909090] text-[21px]" />
-              </button>
-              <h4 className="font-normal text-[14px] text-[#202020]">
-                Online orders
-              </h4>
-            </div>
-            <div className="flex items-center gap-3 mb-4 p-1 rounded-sm cursor-pointer transition-all duration-300 ease-in-out hover:bg-gray-200">
-              <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7]">
-                <TbLogout2 className="text-[#909090] text-[21px]" />
-              </button>
-              <h4 className="font-normal text-[14px] text-[#202020]">Exit</h4>
-            </div>
+            
+            <nav className="flex flex-wrap lg:flex-col gap-2 pb-2 lg:pb-0 ">
+              {[
+                { icon: <LuShoppingCart />, label: "My installments" },
+                { icon: <CgFileDocument />, label: "Payment history" },
+                { icon: <FaRegClock />, label: "Online orders" },
+                { icon: <TbLogout2 />, label: "Exit", color: "text-red-500" },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-gray-100 transition-all min-w-40 lg:min-w-full border lg:border-none">
+                  <span className="text-xl text-[#909090]">{item.icon}</span>
+                  <span className="text-sm whitespace-nowrap">{item.label}</span>
+                </div>
+              ))}
+            </nav>
           </div>
 
-          <div className="flex-1 flex justify-between gap-5">
-            <div className="w-1/2  rounded-sm">
-              <div className="mb-5 border border-[#F2F2F2]">
-                <div className="flex items-center justify-between gap-5 p-3 mb-3 border-b border-[#F2F2F2]">
-                  <div className="flex items-center gap-3">
-                    <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7] border border-[#E0E0E0]">
-                      <FiUser className="text-[#909090] text-[21px]" />
-                    </button>
-                    <h4 className="font-semibold text-[14px] text-[#202020]">
-                      Personal data
-                    </h4>
-                  </div>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      border: "1px solid #ED3729",
-                      color: "#ED3729",
-                      transition: "all 0.3s ease-in-out",
-                      ":hover": {
-                        backgroundColor: "#ED3729",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    Will change
-                  </Button>
+          {/* Main Content */}
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-6">
+            
+            {/* Personal Data Card */}
+            <div className="border border-[#F2F2F2] rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-[#F2F2F2] bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                  <FiUser className="text-xl text-[#909090]" />
+                  <h4 className="font-semibold text-sm">Personal data</h4>
                 </div>
-                <div className="p-3 min-h-[20vh]">
-                  <h4 className="font-medium text-[14px] text-[#202020] mb-1">
-                    Fazliddin Isomiddinov
-                  </h4>
-                  <h4 className="font-normal text-[14px] text-[#202020]">
-                    Telephone: +998883690201
-                  </h4>
-                </div>
+                <Button size="small" variant="outlined" sx={{ color: "#ED3729", borderColor: "#ED3729", textTransform: 'none' }}>Change</Button>
               </div>
-              <div className=" border border-[#F2F2F2]">
-                <div className="flex items-center justify-between gap-5 p-3 mb-3 border-b border-[#F2F2F2]">
-                  <div className="flex items-center gap-3">
-                    <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7] border border-[#E0E0E0]">
-                      <FiCreditCard className="text-[#909090] text-[20px]" />
-                    </button>
-                    <h4 className="font-semibold text-[14px] text-[#202020]">
-                      My card
-                    </h4>
-                  </div>
-                </div>
-                <div className="p-3 min-h-[38.75vh]">
-                  <h4 className="font-medium text-[14px] text-[#202020] mb-1">
-                    Absent
-                  </h4>
-                </div>
+              <div className="p-4 space-y-2">
+                <p className="font-medium text-sm text-[#202020]">Fazliddin Isomiddinov</p>
+                <p className="text-sm text-gray-600">Telephone: +998883690201</p>
               </div>
             </div>
 
-            <div className="w-1/2  rounded-sm">
-              <div className="mb-5 border border-[#F2F2F2]">
-                <div className="flex items-center justify-between gap-5 p-3 mb-3 border-b border-[#F2F2F2]">
-                  <div className="flex items-center gap-3">
-                    <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7] border border-[#E0E0E0]">
-                      <FiUser className="text-[#909090] text-[21px]" />
-                    </button>
-                    <h4 className="font-semibold text-[14px] text-[#202020]">
-                      Personal data
-                    </h4>
-                  </div>
-                </div>
-                <div className="p-3 min-h-[20vh]">
-                  <h4 className="font-semibold text-[14px] text-[#202020] mb-1">
-                    Receive information about promotions and discounts
-                  </h4>
-                  <div className="flex items-center gap-3">
-                    <Switch
+            {/* Promotions Card */}
+            <div className="border border-[#F2F2F2] rounded-xl overflow-hidden">
+              <div className="flex items-center gap-3 p-4 border-b border-[#F2F2F2] bg-gray-50/50">
+                <FiUser className="text-xl text-[#909090]" />
+                <h4 className="font-semibold text-sm">Notifications</h4>
+              </div>
+              <div className="p-4">
+                <p className="font-medium text-sm mb-3">Receive promotion info</p>
+                <div className="flex items-center gap-2">
+                  <Switch
                       {...label}
                       defaultChecked
                       size="small"
@@ -183,107 +102,48 @@ function Profil() {
                           },
                       }}
                     />
-                    <h4 className="font-normal text-[14px] text-[#202020]">
-                      By SMS
-                    </h4>
-                  </div>
-                </div>
-              </div>
-              <div className=" border border-[#F2F2F2]">
-                <div className="flex items-center justify-between gap-5 p-3 mb-3 border-b border-[#F2F2F2]">
-                  <div className="flex items-center gap-3">
-                    <button className="w-11 h-11 rounded-full flex items-center justify-center bg-[#F7F7F7] border border-[#E0E0E0]">
-                      <FiTruck className="text-[#909090] text-[20px]" />
-                    </button>
-                    <h4 className="font-semibold text-[14px] text-[#202020]">
-                      Delivery address
-                    </h4>
-                  </div>
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      width: "100px",
-                      border: "1px solid #ED3729",
-                      color: "#ED3729",
-                      transition: "all 0.3s ease-in-out",
-                      ":hover": {
-                        backgroundColor: "#ED3729",
-                        color: "white",
-                      },
-                    }}
-                  >
-                    Add
-                  </Button>
-                </div>
-                <div className="p-3">
-                  <form action="">
-                    <input
-                      className="font-normal text-[14px] text-[#909090] outline-none border border-[#E0E0E0] rounded-sm py-2.5 px-4 w-full mb-5"
-                      type="text"
-                      placeholder="Ko'cha"
-                      required
-                    />
-                    <div className="flex gap-5 justify-between mb-5">
-                      <input
-                        className="font-normal text-[14px] text-[#909090] outline-none border border-[#E0E0E0] rounded-sm py-2.5 px-4 w-1/2 "
-                        type="text"
-                        placeholder="Uy"
-                        required
-                      />
-                      <input
-                        className="font-normal text-[14px] text-[#909090] outline-none border border-[#E0E0E0] rounded-sm py-2.5 px-4 w-1/2"
-                        type="text"
-                        placeholder="Kvartira"
-                        required
-                      />
-                    </div>
-                    <div className="flex items-center gap-1 mb-5">
-                      <Checkbox
-                        {...label}
-                        sx={{
-                          color: "#E0E0E0",
-                          "&.Mui-checked": {
-                            color: "#ED3729",
-                          },
-                        }}
-                      />
-                      <h4 className="font-normal text-[14px] text-[#202020]">
-                        Default address
-                      </h4>
-                    </div>
-                    <div className="flex gap-5">
-                      <Button
-                        variant="contained"
-                        type="submit"
-                        sx={{
-                          backgroundColor: "#ED3729",
-                          width: "110px",
-                        }}
-                      >
-                        Save
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="outlined"
-                        sx={{
-                          width: "100px",
-                          fontWeight: "600",
-                          border: "1px solid #ED3729",
-                          color: "#ED3729",
-                          transition: "all 0.3s ease-in-out",
-                          ":hover": {
-                            backgroundColor: "#ED3729",
-                            color: "white",
-                          },
-                        }}
-                      >
-                        Cencel
-                      </Button>
-                    </div>
-                  </form>
+                  <span className="text-sm">By SMS</span>
                 </div>
               </div>
             </div>
+
+            {/* My Card */}
+            <div className="border border-[#F2F2F2] rounded-xl overflow-hidden">
+              <div className="flex items-center gap-3 p-4 border-b border-[#F2F2F2] bg-gray-50/50">
+                <FiCreditCard className="text-xl text-[#909090]" />
+                <h4 className="font-semibold text-sm">My card</h4>
+              </div>
+              <div className="p-8 text-center text-gray-400 text-sm italic">No cards added yet.</div>
+            </div>
+
+            {/* Delivery Address Card */}
+            <div className="border border-[#F2F2F2] rounded-xl overflow-hidden">
+              <div className="flex items-center justify-between p-4 border-b border-[#F2F2F2] bg-gray-50/50">
+                <div className="flex items-center gap-3">
+                  <FiTruck className="text-xl text-[#909090]" />
+                  <h4 className="font-semibold text-sm">Delivery address</h4>
+                </div>
+                <Button size="small" variant="outlined" sx={{ color: "#ED3729", borderColor: "#ED3729", textTransform: 'none' }}>Add</Button>
+              </div>
+              <div className="p-4">
+                <form className="space-y-4">
+                  <input className="w-full border border-gray-200 rounded-lg p-2.5 text-sm outline-none focus:border-Primary" placeholder="Street" required />
+                  <div className="flex gap-4">
+                    <input className="w-1/2 border border-gray-200 rounded-lg p-2.5 text-sm outline-none" placeholder="House" required />
+                    <input className="w-1/2 border border-gray-200 rounded-lg p-2.5 text-sm outline-none" placeholder="Apartment" required />
+                  </div>
+                  <div className="flex items-center">
+                    <Checkbox size="small" sx={{ color: "#E0E0E0", "&.Mui-checked": { color: "#ED3729" } }} />
+                    <span className="text-sm">Default address</span>
+                  </div>
+                  <div className="flex gap-3">
+                    <Button variant="contained" fullWidth sx={{ backgroundColor: "#ED3729", textTransform: 'none' }}>Save</Button>
+                    <Button variant="outlined" fullWidth sx={{ color: "#ED3729", borderColor: "#ED3729", textTransform: 'none' }}>Cancel</Button>
+                  </div>
+                </form>
+              </div>
+            </div>
+
           </div>
         </div>
       </div>
