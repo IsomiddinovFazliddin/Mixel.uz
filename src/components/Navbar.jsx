@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Box, Button, Skeleton } from "@mui/material";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { FaRegHeart, FaUser } from "react-icons/fa";
 import { FiSearch, FiShoppingCart, FiUser } from "react-icons/fi";
@@ -229,19 +229,25 @@ function Navbar() {
           </div>
 
           <ul className="flex-1 hidden md:flex flex-wrap items-center justify-between gap-4 overflow-x-auto whitespace-nowrap text-[14px] font-medium text-gray-700">
-            {categoryData?.map((item, i) => {
-              return (
-                <li
-                  key={i}
-                  className="hover:text-Primary cursor-pointer transition-colors"
-                  onClick={() => {
-                    navigate("/filter");
-                  }}
-                >
-                  {item?.name}
-                </li>
-              );
-            })}
+            {categoryData?.length > 0
+              ? categoryData?.map((item, i) => {
+                  return (
+                    <li
+                      key={i}
+                      className="hover:text-Primary cursor-pointer transition-colors"
+                      onClick={() => {
+                        navigate("/filter");
+                      }}
+                    >
+                      {item?.name}
+                    </li>
+                  );
+                })
+              : [1, 1, 1, 1, 1, 1].map((item, i) => {
+                  return (
+                      <Skeleton key={i} variant="rounded" width={100} height={20} />
+                  );
+                })}
           </ul>
         </div>
       </div>

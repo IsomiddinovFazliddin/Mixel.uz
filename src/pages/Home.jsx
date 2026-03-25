@@ -14,7 +14,7 @@ import { IoArrowBackOutline, IoArrowBackSharp } from "react-icons/io5";
 import { IoArrowForward } from "react-icons/io5";
 import Product from "../components/Product";
 import Marquee from "react-fast-marquee";
-import { Button } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 import Box from "../components/Box";
 import { DataContext } from "../App";
 import { useNavigate } from "react-router-dom";
@@ -41,17 +41,30 @@ function Home() {
           modules={[Autoplay, Pagination, Navigation]}
           className="mySwiper flex"
         >
-          {gallery?.map((item, i) => {
-            return (
-              <SwiperSlide>
-                <div className="container mx-auto bg-[#FAFAFA] flex flex-col md:flex-row items-center justify-between gap-5">
-                  <div className="w-full h-90">
-                    <img className="w-full h-full object-cover" src={item?.image} alt="" />
+          {gallery?.length > 0 ? (
+            gallery?.map((item, i) => {
+              return (
+                <SwiperSlide>
+                  <div className="container mx-auto bg-[#FAFAFA] flex flex-col md:flex-row items-center justify-between gap-5">
+                    <div className="w-full h-90">
+                      <img
+                        className="w-full h-full object-cover"
+                        src={item?.image}
+                        alt=""
+                      />
+                    </div>
                   </div>
-                </div>
-              </SwiperSlide>
-            );
-          })}
+                </SwiperSlide>
+              );
+            })
+          ) : (
+            <Skeleton
+              variant="rectangular"
+              width={1200}
+              height={350}
+              className="mx-auto"
+            />
+          )}
         </Swiper>
       </header>
 
@@ -67,9 +80,15 @@ function Home() {
               </button>
             </div>
             <div className="card grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-5">
-              {productData?.map((item, i) => {
-                return <Product key={i} item={item} />;
-              })}
+              {productData?.length > 0
+                ? productData?.map((item, i) => {
+                    return <Product key={i} item={item} />;
+                  })
+                : [1, 1, 1, 1].map((item, i) => {
+                    return (
+                      <Skeleton variant="rounded" width={300} height={250} />
+                    );
+                  })}
             </div>
           </div>
         </section>
@@ -80,28 +99,39 @@ function Home() {
             </h4>
             <Marquee pauseOnHover={true} autoFill={true} speed={50}>
               <div className="flex items-center py-6">
-                {categoryData?.map((item, i) => {
-                  return (
-                    <div
-                      key={i}
-                      className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5 cursor-pointer"
-                      onClick={() => {
-                        navigate("/filter");
-                      }}
-                    >
-                      <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
-                        Computers
-                      </h4>
-                      <div className="imgs w-38 h-34 object-cover">
-                        <img
-                          className="w-full h-[90%]"
-                          src={item?.image}
-                          alt=""
+                {categoryData?.length > 0
+                  ? categoryData?.map((item, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5 cursor-pointer"
+                          onClick={() => {
+                            navigate("/filter");
+                          }}
+                        >
+                          <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
+                            Computers
+                          </h4>
+                          <div className="imgs w-38 h-34 object-cover">
+                            <img
+                              className="w-full h-[90%]"
+                              src={item?.image}
+                              alt=""
+                            />
+                          </div>
+                        </div>
+                      );
+                    })
+                  : [1, 1, 1, 1, 1].map((item, i) => {
+                      return (
+                        <Skeleton
+                          key={i}
+                          variant="rounded"
+                          width={250}
+                          height={60}
                         />
-                      </div>
-                    </div>
-                  );
-                })}
+                      );
+                    })}
               </div>
             </Marquee>
           </div>
@@ -247,9 +277,15 @@ function Home() {
               </button>
             </div>
             <div className="card grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 py-5">
-              {productData?.map((item, i) => {
-                return <Product key={i} item={item} />;
-              })}
+              {productData?.length > 0
+                ? productData?.map((item, i) => {
+                    return <Product key={i} item={item} />;
+                  })
+                : [1, 1, 1, 1].map((item, i) => {
+                    return (
+                      <Skeleton variant="rounded" width={300} height={250} />
+                    );
+                  })}
             </div>
           </div>
         </section>
@@ -282,9 +318,15 @@ function Home() {
                 </div>
               </div>
               <div className="card w-full grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-4 py-5">
-                {productData?.map((item, i) => {
-                  return <Product key={i} item={item} />;
-                })}
+                {productData?.length > 0
+                  ? productData?.map((item, i) => {
+                      return <Product key={i} item={item} />;
+                    })
+                  : [1, 1, 1, 1].map((item, i) => {
+                    return (
+                      <Skeleton variant="rounded" width={300} height={250} />
+                    );
+                  })}
               </div>
             </div>
           </div>
@@ -300,16 +342,22 @@ function Home() {
             </div>
             <Marquee pauseOnHover={false} autoFill={true} speed={70}>
               <div className="flex items-center py-6 gap-10">
-                {brand?.map((item, i) => {
-                  return (
-                    <div
-                      key={i}
-                      className="w-60 flex justify-center p-5 border border-[#E0E0E0] rounded-sm mr-5 transition-all duration-500 ease-in-out hover:shadow-lg"
-                    >
-                      <img className="w-full " src={item?.image} alt="" />
-                    </div>
-                  );
-                })}
+                {brand?.length > 0
+                  ? brand?.map((item, i) => {
+                      return (
+                        <div
+                          key={i}
+                          className="w-60 flex justify-center p-5 border border-[#E0E0E0] rounded-sm mr-5 transition-all duration-500 ease-in-out hover:shadow-lg"
+                        >
+                          <img className="w-full " src={item?.image} alt="" />
+                        </div>
+                      );
+                    })
+                  : [1, 1, 1, 1, 1].map((item, i) => {
+                      return (
+                        <Skeleton variant="rounded" width={250} height={60} />
+                      );
+                    })}
               </div>
             </Marquee>
           </div>

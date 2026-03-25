@@ -55,7 +55,6 @@ function App() {
     }
   }, [tokenTitle]);
 
-  console.log(cartData);
 
   return (
     <>

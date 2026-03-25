@@ -10,8 +10,6 @@ function Product({ item }) {
   const { tokenTitle, likeData, setLikeData, cartData, setCartData } =
     useContext(DataContext);
 
-  console.log(cartData);
-
   const navigate = useNavigate();
 
   const isLiked = likeData?.some((like) => like.product.id == item.id);

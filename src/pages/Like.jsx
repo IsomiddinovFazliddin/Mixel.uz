@@ -3,6 +3,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom";
 import Product from "../components/Product";
 import { DataContext } from "../App";
+import { Skeleton } from "@mui/material";
 
 function Like() {
   const { likeData } = useContext(DataContext);
@@ -28,9 +29,13 @@ function Like() {
           Favorites
         </h4>
         <div className="grid px-5 md:px-0 grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-13">
-          {likeData?.map((item, i) => {
-            return <Product key={i} item={item.product} />;
-          })}
+          {likeData?.length > 0
+            ? likeData?.map((item, i) => {
+                return <Product key={i} item={item.product} />;
+              })
+            : [1, 1, 1, 1].map((item, i) => {
+                return <Skeleton key={i} variant="rounded" width={300} height={250} />;
+              })}
         </div>
       </div>
     </div>
