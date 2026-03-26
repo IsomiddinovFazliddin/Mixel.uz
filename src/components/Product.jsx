@@ -51,17 +51,17 @@ function Product({ item }) {
       return;
     }
 
-    // 🔍 cartda bor-yo‘qligini tekshiramiz
+    // cartda bor-yo‘qligini tekshiramiz
     const cartItem = cartData?.find((data) => data.product === item.id);
 
-    // ❌ AGAR BOR BO‘LSA → O‘CHIRAMIZ
+    // AGAR BOR BO‘LSA → O‘CHIRAMIZ
     if (cartItem) {
       deletCart(cartItem.id).then(() => {
         setCartData((prev) => prev.filter((data) => data.product !== item.id));
         toast.info("Savatdan olib tashlandi");
       });
 
-      // ✅ AGAR YO‘Q BO‘LSA → QO‘SHAMIZ
+      // AGAR YO‘Q BO‘LSA → QO‘SHAMIZ
     } else {
       addToCart(item.id, 1).then((data) => {
         setCartData((prev) => [...prev, data]);

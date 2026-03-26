@@ -19,12 +19,15 @@ import {
   getGallery,
   getProducts,
   likeItems,
+  userData,
 } from "./services";
+import UserModal from "./components/UserModal";
 
 export const DataContext = createContext();
 
 function App() {
   const [categoryModal, setCategoryModal] = useState(false);
+  const [userModal, setUserModal] = useState(false);
   const [tokenTitle, setTokenTitle] = useState(
     localStorage.getItem("accesToken")
       ? localStorage.getItem("accesToken")
@@ -36,6 +39,12 @@ function App() {
   const [gallery, setGallery] = useState([]);
   const [likeData, setLikeData] = useState([]);
   const [cartData, setCartData] = useState([]);
+
+  const [userName, setUserName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     getCategory().then((data) => setCategoryData(data.results));
@@ -53,8 +62,11 @@ function App() {
       setLikeData([]);
       setCartData([]);
     }
-  }, [tokenTitle]);
 
+    userData().then((data) => {
+      console.log(data);
+    });
+  }, [tokenTitle]);
 
   return (
     <>
@@ -72,9 +84,22 @@ function App() {
           setTokenTitle,
           cartData,
           setCartData,
+          userModal,
+          setUserModal,
+          userName,
+          setUserName,
+          firstName,
+          setFirstName,
+          lastName,
+          setLastName,
+          phoneNumber,
+          setPhoneNumber,
+          password,
+          setPassword,
         }}
       >
         <BrowserRouter>
+          <UserModal />
           <CategoryModal />
           <Navbar />
           <Routes>

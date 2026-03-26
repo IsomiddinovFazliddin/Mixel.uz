@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Button, Skeleton } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { FaBalanceScale, FaHeart } from "react-icons/fa";
 import { FiHelpCircle, FiRefreshCcw } from "react-icons/fi";
@@ -8,182 +8,216 @@ import { RiShoppingCart2Fill } from "react-icons/ri";
 import { RxDividerVertical } from "react-icons/rx";
 import { SlEarphonesAlt } from "react-icons/sl";
 import { TbTruckDelivery } from "react-icons/tb";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { DataContext } from "../App";
 import Product from "../components/Product";
-import { productDetail } from "../services";
+import { productDetail, addToCart, addToLiked, deletCart, deletLiked } from "../services";
+import { toast } from "react-toastify";
 
 function ProductDetails() {
-  const { productData } = useContext(DataContext);
+  const { 
+    productData, 
+    likeData, setLikeData, 
+    cartData, setCartData, 
+    tokenTitle 
+  } = useContext(DataContext);
+  
   const [product, setProduct] = useState(null);
-  const [mainImg, setMainImg] = useState();
+  const [mainImg, setMainImg] = useState("");
+  const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const navigate = useNavigate();
+
+  const isLiked = likeData?.some((like) => like.product.id == id);
+  const isCart = cartData?.some((cart) => cart.product == id);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+    setLoading(true);
+    setMainImg(""); 
   }, [id]);
 
   useEffect(() => {
+    let isMounted = true;
     productDetail(id).then((data) => {
-      setProduct(data);
-      setMainImg(data?.images?.[0]?.image);
-    });
+      if (isMounted) {
+        setProduct(data);
+        if (data?.images?.length > 0) {
+          setMainImg(data.images[0].image);
+        }
+        setLoading(false);
+      }
+    }).catch(() => setLoading(false));
+    return () => { isMounted = false; };
   }, [id]);
+
+  const handleLiked = () => {
+    if (!tokenTitle) {
+      toast.error("Avval ro'yxatdan o'ting");
+      navigate("/signup");
+      return;
+    }
+    const likedItem = likeData.find((like) => like.product.id == id);
+    if (likedItem) {
+      deletLiked(likedItem.id).then(() => {
+        setLikeData(likeData.filter((like) => like.product.id != id));
+        toast.info("Yoqtirilganlardan olib tashlandi");
+      });
+    } else {
+      addToLiked(id).then((data) => {
+        if (data) {
+          setLikeData([...likeData, { id: data.id, product: { id: parseInt(id) } }]);
+          toast.success("Yoqtirganlarga qo'shildi");
+        }
+      });
+    }
+  };
+
+  const handleCart = () => {
+    if (!tokenTitle) {
+      toast.error("Avval ro'yxatdan o'ting");
+      navigate("/signup");
+      return;
+    }
+    const cartItem = cartData?.find((data) => data.product == id);
+    if (cartItem) {
+      deletCart(cartItem.id).then(() => {
+        setCartData((prev) => prev.filter((data) => data.product != id));
+        toast.info("Savatdan olib tashlandi");
+      });
+    } else {
+      addToCart(id, 1).then((data) => {
+        setCartData((prev) => [...prev, data]);
+        toast.success("Savatga qo'shildi");
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-4 md:py-8">
         
-        {/* 1. Breadcrumbs - Mobilda scroll bo'ladi agar sig'masa */}
-        <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-4 scrollbar-hide text-[#626364] text-sm md:text-base">
-          <Link to="/" className="hover:text-Primary transition-colors">Home</Link>
-          <IoIosArrowForward className="shrink-0" />
-          <Link to="/laptops" className="hover:text-Primary transition-colors">Laptops</Link>
-          <IoIosArrowForward className="shrink-0" />
-          <span className="text-Primary font-medium">{product?.brand || "Apple"}</span>
+        {/* Breadcrumbs */}
+        <div className="flex items-center gap-2 mb-6 text-[#626364] text-sm">
+          <Link to="/" className="hover:text-red-500">Home</Link>
+          <IoIosArrowForward />
+          <Link to="/filter" className="hover:text-red-500">Laptops</Link>
+          <IoIosArrowForward />
+          <span className="text-red-500 font-medium">{id}</span>
         </div>
 
-        {/* 2. Asosiy Blok: Mobilda 1 ustun, Desktopda 3 qismli Flex */}
-        <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
           
-          {/* --- RASMLAR BO'LIMI --- */}
-          <div className="w-full md:w-100 shrink-0 mx-auto">
-            {/* Asosiy rasm */}
-            <div className="w-full aspect-square border border-[#F2F2F2] rounded-xl flex items-center justify-center bg-white p-4">
-              <img 
-                className="max-w-full max-h-full object-contain hover:scale-105 transition-transform duration-300" 
-                src={mainImg} 
-                alt={product?.name} 
-              />
+          {/* CHAP TOMON: RASMLAR GALEREYASI */}
+          <div className="w-full lg:w-97.5 shrink-0">
+            <div className="w-full aspect-square border border-[#F2F2F2] rounded-xl flex items-center justify-center bg-white p-4 mb-4">
+              {loading ? <Skeleton variant="rectangular" width="100%" height="100%" /> : (
+                <img className="max-w-full max-h-full object-contain" src={mainImg} alt={product?.name} />
+              )}
             </div>
-            {/* Kichik rasmlar (Thumbnails) */}
-            <div className="flex justify-center gap-3 mt-4 overflow-x-auto pb-2">
+            <div className="flex justify-center gap-3 overflow-x-auto pb-2 scrollbar-hide">
               {product?.images?.map((item, i) => (
-                <button
+                <div 
                   key={i}
                   onClick={() => setMainImg(item.image)}
-                  className={`w-16 h-16 md:w-20 md:h-20 shrink-0 border-2 rounded-lg flex items-center justify-center p-1 transition-all
-                    ${mainImg === item.image ? 'border-Primary' : 'border-[#F2F2F2] hover:border-gray-300'}`}
+                  className={`w-20 h-20 border-2 rounded-lg cursor-pointer p-1 flex items-center justify-center shrink-0 ${mainImg === item.image ? 'border-red-500' : 'border-[#F2F2F2]'}`}
                 >
                   <img className="max-w-full max-h-full object-contain" src={item.image} alt="" />
-                </button>
+                </div>
               ))}
             </div>
           </div>
 
-          {/* --- MARKAZIY MA'LUMOTLAR BO'LIMI --- */}
+          {/* O'RTA: MAHSULOT MA'LUMOTLARI */}
           <div className="flex-1 w-full">
-            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#202020] mb-4">
-              {product?.name}
+            <h1 className="text-3xl font-bold text-[#202020] mb-4">
+              {loading ? <Skeleton width="80%" /> : product?.name}
             </h1>
             
-            {/* Narx va Actionlar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 py-6 border-b border-[#F2F2F2]">
-              <div className="flex items-center gap-2">
-                <span className="text-2xl md:text-3xl font-bold text-[#202020]">
-                  {product?.price?.toLocaleString()} сум
-                </span>
-                <IoInformationCircleOutline className="text-[#909090] text-xl cursor-help" />
-              </div>
-              <div className="flex items-center gap-4 bg-[#F9F9F9] p-2 rounded-lg sm:bg-transparent">
-                <RiShoppingCart2Fill className="text-[#BDBDBD] text-2xl cursor-pointer hover:text-Primary transition-colors" />
-                <RxDividerVertical className="text-[#BDBDBD] text-2xl" />
-                <FaHeart className="text-[#BDBDBD] text-xl cursor-pointer hover:text-red-500 transition-colors" />
-                <RxDividerVertical className="text-[#BDBDBD] text-2xl" />
-                <FaBalanceScale className="text-[#BDBDBD] text-2xl cursor-pointer hover:text-blue-500 transition-colors" />
+            <div className="flex items-center gap-4 mb-6">
+              <span className="text-3xl font-bold text-[#202020]">
+                {loading ? <Skeleton width={150} /> : `${product?.price?.toLocaleString()} сум`}
+              </span>
+              <IoInformationCircleOutline className="text-gray-400 text-xl" />
+              <div className="flex items-center gap-4 ml-auto">
+                <RiShoppingCart2Fill onClick={handleCart} className={`text-2xl cursor-pointer ${isCart ? "text-red-500" : "text-gray-300"}`} />
+                <RxDividerVertical className="text-gray-300 text-2xl" />
+                <FaHeart onClick={handleLiked} className={`text-xl cursor-pointer ${isLiked ? "text-red-500" : "text-gray-300"}`} />
+                <RxDividerVertical className="text-gray-300 text-2xl" />
+                <FaBalanceScale className="text-gray-300 text-2xl cursor-pointer" />
               </div>
             </div>
 
-            {/* VIP Status */}
-            <div className="flex items-center gap-2 my-6 text-[#909090]">
-              <FiHelpCircle className="shrink-0" />
-              <p className="text-sm">VIP скидки для VIP клиентов</p>
-            </div>
+            <p className="text-sm text-gray-400 flex items-center gap-1 mb-8">
+              <FiHelpCircle /> VIP скидки для VIP клиентов
+            </p>
 
-            {/* Tugmalar - Mobilda to'liq kenglik */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-              <Button
-                variant="contained"
-                sx={{ bgcolor: "#ED3729", py: 1.5, textTransform: 'none', fontSize: '16px', fontWeight: 'bold', '&:hover': { bgcolor: '#d32f2f' } }}
-              >
-                Buy now
+            <div className="flex gap-4 mb-10">
+              <Button onClick={handleCart} variant="contained" sx={{ bgcolor: "#ED3729", flex: 1, py: 1.5, fontWeight: 'bold', '&:hover': { bgcolor: '#d32f2f' } }}>
+                {isCart ? "In Cart" : "Buy now"}
               </Button>
-              <Button
-                variant="contained"
-                sx={{ bgcolor: "#202020", py: 1.5, textTransform: 'none', fontSize: '16px', fontWeight: 'bold', '&:hover': { bgcolor: '#000' } }}
-              >
+              <Button variant="contained" sx={{ bgcolor: "#202020", flex: 1, py: 1.5, fontWeight: 'bold', '&:hover': { bgcolor: '#000' } }}>
                 In installments
               </Button>
             </div>
 
-            {/* Shartnoma ma'lumoti */}
-            <div className="p-4 bg-gray-50 rounded-lg mb-8 border-l-4 border-Primary">
-              <h5 className="text-xs uppercase tracking-wider text-[#909090] mb-1 font-bold">Contract Info</h5>
-              <p className="text-sm md:text-base text-[#202020] leading-relaxed">
-                {product?.description || "MacBook Pro 13 MXK32ZP/A Space Gray Full HD 1920x1080 IPS / Core™ i7-1165G7 / 8GB RAM / 256GB SSD"}
-              </p>
+            <div className="border-l-4 border-red-500 bg-gray-50 p-4 mb-10">
+              <h5 className="text-xs font-bold text-gray-400 uppercase mb-2">Contract Info</h5>
+              <p className="text-sm text-gray-700 leading-relaxed">{product?.description}</p>
             </div>
 
-            {/* Texnik parametrlar - Toza jadval ko'rinishida */}
-            <div className="mb-10">
-              <h3 className="text-xl font-bold text-[#3E3E3E] mb-4">Technical parameters</h3>
-              <div className="border rounded-xl overflow-hidden">
-                {[
-                  { label: "Model", value: product?.name?.split(' ')[0] || "Apple" },
-                  { label: "Status", value: "New (Original)" },
-                  { label: "Warranty", value: "1 Year" },
-                ].map((row, idx) => (
-                  <div key={idx} className={`flex justify-between p-4 text-sm md:text-base ${idx !== 2 ? 'border-b' : ''} hover:bg-gray-50 transition-colors`}>
-                    <span className="text-[#909090] font-medium">{row.label}</span>
-                    <span className="text-[#202020] font-semibold text-right">{row.value}</span>
-                  </div>
-                ))}
+            <h3 className="text-xl font-bold mb-4">Technical parameters</h3>
+            <div className="border rounded-xl">
+              <div className="flex justify-between p-4 border-b">
+                <span className="text-gray-400">Model</span>
+                <span className="font-semibold">{product?.brand || "N/A"}</span>
+              </div>
+              <div className="flex justify-between p-4">
+                <span className="text-gray-400">Status</span>
+                <span className="font-semibold">New (Original)</span>
               </div>
             </div>
           </div>
 
-          {/* --- O'NG TARAFI: SERVISLAR (SIDEBAR) --- */}
-          <div className="w-full lg:w-80 space-y-4 shrink-0">
-            {/* Return Card */}
-            <div className="flex gap-4 p-5 bg-[#F7F7F7] rounded-xl border border-[#eeeeee]">
-              <FiRefreshCcw className="text-2xl text-Primary shrink-0" />
-              <div>
-                <h4 className="font-bold text-[16px] mb-1 leading-snug">30 days for return.</h4>
-                <p className="text-xs text-[#909090] mb-2 leading-relaxed">If you buy today, you can return until May 6.</p>
-                <button className="text-xs text-[#2F80ED] font-semibold hover:underline">Read more</button>
-              </div>
-            </div>
-
-            {/* Contact Card */}
-            <div className="flex gap-4 p-5 bg-[#F7F7F7] rounded-xl border border-[#eeeeee]">
-              <SlEarphonesAlt className="text-2xl text-Primary shrink-0" />
-              <div className="space-y-2">
-                <h4 className="font-bold text-[16px]">Support 24/7</h4>
-                <div className="text-xs space-y-1">
-                  <p className="text-[#909090]">Phone: <span className="text-[#202020] font-bold">+998 99 990 45 27</span></p>
-                  <p className="text-[#909090]">Telegram: <span className="text-[#2F80ED] font-bold">@mixel_uz</span></p>
-                </div>
-              </div>
-            </div>
-
-            {/* Delivery & Payment Card */}
-            <div className="p-5 bg-[#F7F7F7] rounded-xl border border-[#eeeeee] space-y-6">
-              <div className="flex gap-4">
-                <TbTruckDelivery className="text-2xl text-Primary shrink-0" />
+          {/* O'NG TOMON: SIDEBAR INFO (Skrinshotingizdagidek) */}
+          <div className="w-full lg:w-80 space-y-4">
+            <div className="p-5 border border-gray-100 rounded-2xl bg-white shadow-sm">
+              <div className="flex items-start gap-3 mb-4">
+                <FiRefreshCcw className="text-red-500 text-xl mt-1" />
                 <div>
-                  <h4 className="font-bold text-[16px]">Delivery</h4>
-                  <p className="text-sm text-green-600 font-bold">Free Shipping</p>
+                  <h4 className="font-bold text-sm">30 days for return.</h4>
+                  <p className="text-xs text-gray-400 mt-1">If you buy today, you can return until May 6.</p>
+                  <Link to="#" className="text-blue-500 text-xs mt-2 block">Read more</Link>
                 </div>
               </div>
-              <div className="flex gap-4 border-t pt-4">
-                <IoWalletOutline className="text-2xl text-Primary shrink-0" />
-                <div className="w-full">
-                  <h4 className="font-bold text-[16px] mb-2">Payment:</h4>
-                  <ul className="text-xs text-[#909090] space-y-2">
-                    <li className="flex items-center gap-2">• Cash on delivery</li>
-                    <li className="flex items-center gap-2">• Payme / Click</li>
-                    <li className="flex items-center gap-2">• Bank transfer</li>
-                  </ul>
+              <hr className="my-4 border-gray-50" />
+              <div className="flex items-start gap-3">
+                <SlEarphonesAlt className="text-red-500 text-xl mt-1" />
+                <div>
+                  <h4 className="font-bold text-sm">Support 24/7</h4>
+                  <p className="text-xs text-gray-400 mt-1">Phone: +998 99 990 45 27</p>
+                  <p className="text-xs text-gray-400">Telegram: @mixel_uz</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-5 border border-gray-100 rounded-2xl bg-white shadow-sm space-y-4">
+              <div className="flex items-center gap-3">
+                <TbTruckDelivery className="text-red-500 text-2xl" />
+                <div>
+                   <h4 className="font-bold text-sm">Delivery</h4>
+                   <p className="text-green-500 text-xs font-bold">Free Shipping</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <IoWalletOutline className="text-red-500 text-2xl" />
+                <div>
+                   <h4 className="font-bold text-sm">Payment:</h4>
+                   <ul className="text-xs text-gray-400 list-disc list-inside">
+                     <li>Cash on delivery</li>
+                     <li>Payme / Click</li>
+                     <li>Bank transfer</li>
+                   </ul>
                 </div>
               </div>
             </div>
@@ -191,18 +225,16 @@ function ProductDetails() {
 
         </div>
 
-        {/* 3. Pastki qism: O'xshash mahsulotlar */}
-        <div className="mt-16 md:mt-24">
-          <div className="flex items-center justify-between mb-8 border-b pb-4">
-            <h2 className="text-2xl font-bold text-[#202020]">Similar Products</h2>
-            <Link to="" className="text-Primary font-semibold hover:underline">View all</Link>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        {/* OXSHASH MAHSULOTLAR */}
+        <div className="mt-20">
+          <h2 className="text-2xl font-bold mb-8">Similar Products</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
             {productData?.slice(0, 4).map((item, i) => (
               <Product key={i} item={item} />
             ))}
           </div>
         </div>
+
       </div>
     </div>
   );

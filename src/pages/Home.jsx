@@ -86,7 +86,7 @@ function Home() {
                   })
                 : [1, 1, 1, 1].map((item, i) => {
                     return (
-                      <Skeleton variant="rounded" width={300} height={250} />
+                      <Skeleton key={i} variant="rounded" width={300} height={250} />
                     );
                   })}
             </div>
@@ -283,7 +283,7 @@ function Home() {
                   })
                 : [1, 1, 1, 1].map((item, i) => {
                     return (
-                      <Skeleton variant="rounded" width={300} height={250} />
+                      <Skeleton key={i} variant="rounded" width={300} height={250} />
                     );
                   })}
             </div>
@@ -324,7 +324,7 @@ function Home() {
                     })
                   : [1, 1, 1, 1].map((item, i) => {
                     return (
-                      <Skeleton variant="rounded" width={300} height={250} />
+                      <Skeleton key={i} variant="rounded" width={300} height={250} />
                     );
                   })}
               </div>
@@ -355,7 +355,7 @@ function Home() {
                     })
                   : [1, 1, 1, 1, 1].map((item, i) => {
                       return (
-                        <Skeleton variant="rounded" width={250} height={60} />
+                        <Skeleton key={i} variant="rounded" width={250} height={60} />
                       );
                     })}
               </div>

@@ -287,3 +287,57 @@ export const deletCart = (id) => {
       return error;
     });
 };
+
+export const userData = () => {
+  const myHeaders = new Headers();
+  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+
+  const requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow",
+  };
+
+  return fetch(`${baseURL}users/me`, requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    })
+    .catch((error) => {
+      return error;
+    });
+};
+
+export const userUpdate = (userName, firstName, lastName, phoneNumber, password) => {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+
+  const raw = JSON.stringify({
+    id: 87,
+    username: firstName,
+    first_name: firstName,
+    last_name: lastName,
+    image: null,
+    phone_number: phoneNumber,
+    card_number: null,
+    date_joined: "2026-03-16T05:21:58.384481Z",
+    isadmin: false,
+  });
+
+  const requestOptions = {
+    method: "PUT",
+    headers: myHeaders,
+    body: raw,
+    redirect: "follow",
+  };
+
+  return fetch(`${baseURL}users/me`, requestOptions)
+    .then((response) => response.json())
+    .then((result) => {
+      return result;
+    })
+    .catch((error) => {
+      return error;
+    });
+};

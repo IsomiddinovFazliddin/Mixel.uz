@@ -1,11 +1,76 @@
 import { Button } from "@mui/material";
-import React from "react";
+import React, { useContext } from "react";
 import { FaHeart } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
 import { RiScales3Fill } from "react-icons/ri";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { DataContext } from "../App";
+import { addToCart, addToLiked, deletCart, deletLiked } from "../services";
+import { toast } from "react-toastify";
 
 function FilterProduct({ item }) {
+  const { tokenTitle, likeData, setLikeData, cartData, setCartData } =
+    useContext(DataContext);
+
+  const navigate = useNavigate();
+
+  const isLiked = likeData?.some((like) => like.product.id == item.id);
+  const isCart = cartData?.some((cart) => cart.product == item.id);
+
+  const handlLiked = (e) => {
+    e.preventDefault();
+
+    if (!tokenTitle) {
+      toast.error("Avval ro'yxatdan o'ting");
+      navigate("/signup");
+      return;
+    }
+
+    const likedItem = likeData.find((like) => like.product.id == item.id);
+
+    if (likedItem) {
+      deletLiked(likedItem.id).then(() => {
+        const newData = likeData.filter((like) => like.product.id != item.id);
+        setLikeData(newData);
+        toast.info("Yoqtirilganlardan olib tashlandi");
+      });
+    } else {
+      addToLiked(item.id).then((data) => {
+        if (data) {
+          setLikeData([...likeData, { id: data.id, product: { id: item.id } }]);
+          toast.success("Yoqtirganlarga qo'shildi");
+        }
+      });
+    }
+  };
+
+  const handlCart = (e) => {
+    e.preventDefault();
+
+    if (!tokenTitle) {
+      toast.error("Avval ro'yxatdan o'ting");
+      navigate("/signup");
+      return;
+    }
+
+    // cartda bor-yo‘qligini tekshiramiz
+    const cartItem = cartData?.find((data) => data.product === item.id);
+
+    // AGAR BOR BO‘LSA → O‘CHIRAMIZ
+    if (cartItem) {
+      deletCart(cartItem.id).then(() => {
+        setCartData((prev) => prev.filter((data) => data.product !== item.id));
+        toast.info("Savatdan olib tashlandi");
+      });
+
+      // AGAR YO‘Q BO‘LSA → QO‘SHAMIZ
+    } else {
+      addToCart(item.id, 1).then((data) => {
+        setCartData((prev) => [...prev, data]);
+        toast.success("Savatga qo'shildi");
+      });
+    }
+  };
   return (
     <Link
       to={`/productdetails/${item?.id}`}
@@ -51,10 +116,7 @@ function FilterProduct({ item }) {
 
           <Button
             variant="contained"
-            onClick={(e) => {
-              e.preventDefault();
-              // savatchaga qo'shish logikasi
-            }}
+            onClick={handlCart}
             sx={{
               display: "flex",
               gap: "10px",
@@ -72,8 +134,8 @@ function FilterProduct({ item }) {
           {/* Sevimli va taqqoslash tugmalari */}
           <div className="flex items-center justify-center gap-8 mt-4 md:mt-5 md:pt-5 md:border-t border-[#F2F2F2]">
             <FaHeart
-              className="text-[19px] text-[#BDBDBD] cursor-pointer transition-colors"
-              onClick={(e) => e.preventDefault()}
+              className={`text-[19px]  cursor-pointer transition-colors ${isLiked && tokenTitle ? "text-Primary" : "text-[#BDBDBD]"}`}
+              onClick={handlLiked}
             />
             <span className="text-[#F2F2F2] hidden md:inline">|</span>
             <RiScales3Fill

@@ -100,10 +100,7 @@ function Navbar() {
 
           {/* Search Bar */}
           <form className="flex-1 flex items-center border border-Primary rounded-md overflow-hidden bg-white">
-            <div className="hidden lg:flex items-center px-3 border-r border-gray-200 bg-gray-50">
-              <select className="bg-transparent text-[13px] outline-none py-2 cursor-pointer">
-                <option>All categories</option>
-              </select>
+            <div className="hidden lg:flex items-center px-0 border-r border-gray-200 bg-gray-50">
             </div>
             <div className="flex-1 flex items-center relative">
               <input
