@@ -1,5 +1,5 @@
-import { Button, Checkbox, Switch } from "@mui/material";
-import React, { useContext } from "react";
+import { Button, Checkbox, Skeleton, Switch } from "@mui/material";
+import React, { useContext, useEffect } from "react";
 import { CgFileDocument } from "react-icons/cg";
 import { CiGrid2H } from "react-icons/ci";
 import { FaRegClock } from "react-icons/fa";
@@ -14,19 +14,8 @@ import { DataContext } from "../App";
 const label = { inputProps: { "aria-label": "Switch demo" } };
 
 function Profil() {
-  const {
-    setUserModal,
-    userName,
-    setUserName,
-    firstName,
-    setFirstName,
-    lastName,
-    setLastName,
-    phoneNumber,
-    setPhoneNumber,
-    password,
-    setPassword,
-  } = useContext(DataContext);
+  const { setUserModal, profilData } = useContext(DataContext);
+
   return (
     <div className="min-h-screen bg-white">
       <div className="container mx-auto px-4 py-5">
@@ -66,9 +55,18 @@ function Profil() {
               </div>
               <div>
                 <h4 className="font-semibold text-sm text-[#202020]">
-                  Fazliddin Isomiddinov
+                  {profilData?.first_name?.length > 0 ? (
+                    profilData?.first_name
+                  ) : (
+                    <div className="grid gap-2">
+                      <Skeleton variant="rounded" width={180} height={15} />
+                      <Skeleton variant="rounded" width={140} height={10} />
+                    </div>
+                  )}
                 </h4>
-                <p className="text-xs text-gray-500">+998883690201</p>
+                <p className="text-xs text-gray-500">
+                  {profilData?.phone_number}
+                </p>
               </div>
             </div>
 
@@ -118,10 +116,10 @@ function Profil() {
               </div>
               <div className="p-4 space-y-2">
                 <p className="font-medium text-sm text-[#202020]">
-                  Fazliddin Isomiddinov
+                  {profilData?.username?.length > 0 ? profilData?.username : <Skeleton variant="rounded" width={180} height={15} />}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Telephone: +998883690201
+                  Telephone: {profilData?.phone_number}
                 </p>
               </div>
             </div>

@@ -19,7 +19,8 @@ function ProductDetails() {
     productData, 
     likeData, setLikeData, 
     cartData, setCartData, 
-    tokenTitle 
+    tokenTitle,
+    compareData, setCompareData,
   } = useContext(DataContext);
   
   const [product, setProduct] = useState(null);
@@ -30,6 +31,7 @@ function ProductDetails() {
 
   const isLiked = likeData?.some((like) => like.product.id == id);
   const isCart = cartData?.some((cart) => cart.product == id);
+  const isCompare = compareData?.some((c) => c.id == id);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -144,7 +146,22 @@ function ProductDetails() {
                 <RxDividerVertical className="text-gray-300 text-2xl" />
                 <FaHeart onClick={handleLiked} className={`text-xl cursor-pointer ${isLiked ? "text-red-500" : "text-gray-300"}`} />
                 <RxDividerVertical className="text-gray-300 text-2xl" />
-                <FaBalanceScale className="text-gray-300 text-2xl cursor-pointer" />
+                <FaBalanceScale
+                  onClick={() => {
+                    if (isCompare) {
+                      setCompareData((prev) => prev.filter((c) => c.id != id));
+                      toast.info("Taqqoslashdan olib tashlandi");
+                    } else {
+                      if (compareData.length >= 4) {
+                        toast.warning("Maksimal 4 ta mahsulot taqqoslanadi");
+                        return;
+                      }
+                      setCompareData((prev) => [...prev, product]);
+                      toast.success("Taqqoslashga qo'shildi");
+                    }
+                  }}
+                  className={`text-2xl cursor-pointer transition-colors ${isCompare ? "text-Primary" : "text-gray-300"}`}
+                />
               </div>
             </div>
 

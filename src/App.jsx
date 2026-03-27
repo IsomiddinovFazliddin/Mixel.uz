@@ -11,6 +11,7 @@ import Profil from "./pages/Profil";
 import Filter from "./pages/Filter";
 import Like from "./pages/Like";
 import Cart from "./pages/Cart";
+import Compare from "./pages/Compare";
 import {
   addToLiked,
   getBrands,
@@ -39,12 +40,25 @@ function App() {
   const [gallery, setGallery] = useState([]);
   const [likeData, setLikeData] = useState([]);
   const [cartData, setCartData] = useState([]);
+  const [compareData, setCompareData] = useState(() => {
+    try {
+      const saved = localStorage.getItem("compareData");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const [userName, setUserName] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [profilData, setProfilData] = useState([]);
+
+  useEffect(() => {
+    localStorage.setItem("compareData", JSON.stringify(compareData));
+  }, [compareData]);
 
   useEffect(() => {
     getCategory().then((data) => setCategoryData(data.results));
@@ -64,7 +78,7 @@ function App() {
     }
 
     userData().then((data) => {
-      console.log(data);
+      setProfilData(data);
     });
   }, [tokenTitle]);
 
@@ -84,6 +98,8 @@ function App() {
           setTokenTitle,
           cartData,
           setCartData,
+          compareData,
+          setCompareData,
           userModal,
           setUserModal,
           userName,
@@ -96,6 +112,8 @@ function App() {
           setPhoneNumber,
           password,
           setPassword,
+          profilData,
+          setProfilData
         }}
       >
         <BrowserRouter>
@@ -111,6 +129,7 @@ function App() {
             <Route path="/filter" element={<Filter />} />
             <Route path="/like" element={<Like />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/compare" element={<Compare />} />
           </Routes>
           <Footer />
         </BrowserRouter>

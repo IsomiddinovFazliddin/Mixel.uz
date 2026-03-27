@@ -42,7 +42,7 @@ function CategoryModal() {
                         // Sichqoncha ustiga kelganda
                         onMouseEnter={() => setActiveCategory(item)}
                         onClick={() => {
-                          navigate(`/filter/${item.id}`);
+                          navigate(`/filter?category=${item.id}`);
                           setCategoryModal(false);
                         }}
                       >

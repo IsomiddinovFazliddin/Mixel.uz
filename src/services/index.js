@@ -314,19 +314,15 @@ export const userUpdate = (userName, firstName, lastName, phoneNumber, password)
   myHeaders.append("Authorization", `Bearer ${getToken()}`);
 
   const raw = JSON.stringify({
-    id: 87,
-    username: firstName,
+    username: userName,
     first_name: firstName,
     last_name: lastName,
-    image: null,
+    password: password,
     phone_number: phoneNumber,
-    card_number: null,
-    date_joined: "2026-03-16T05:21:58.384481Z",
-    isadmin: false,
   });
 
   const requestOptions = {
-    method: "PUT",
+    method: "PATCH",
     headers: myHeaders,
     body: raw,
     redirect: "follow",

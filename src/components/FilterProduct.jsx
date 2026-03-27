@@ -9,13 +9,29 @@ import { addToCart, addToLiked, deletCart, deletLiked } from "../services";
 import { toast } from "react-toastify";
 
 function FilterProduct({ item }) {
-  const { tokenTitle, likeData, setLikeData, cartData, setCartData } =
+  const { tokenTitle, likeData, setLikeData, cartData, setCartData, compareData, setCompareData } =
     useContext(DataContext);
 
   const navigate = useNavigate();
 
   const isLiked = likeData?.some((like) => like.product.id == item.id);
   const isCart = cartData?.some((cart) => cart.product == item.id);
+  const isCompare = compareData?.some((c) => c.id === item.id);
+
+  const handleCompare = (e) => {
+    e.preventDefault();
+    if (isCompare) {
+      setCompareData((prev) => prev.filter((c) => c.id !== item.id));
+      toast.info("Taqqoslashdan olib tashlandi");
+    } else {
+      if (compareData.length >= 4) {
+        toast.warning("Maksimal 4 ta mahsulot taqqoslanadi");
+        return;
+      }
+      setCompareData((prev) => [...prev, item]);
+      toast.success("Taqqoslashga qo'shildi");
+    }
+  };
 
   const handlLiked = (e) => {
     e.preventDefault();
@@ -139,8 +155,8 @@ function FilterProduct({ item }) {
             />
             <span className="text-[#F2F2F2] hidden md:inline">|</span>
             <RiScales3Fill
-              className="text-[21px] text-[#BDBDBD] hover:text-blue-500 cursor-pointer transition-colors"
-              onClick={(e) => e.preventDefault()}
+              className={`text-[21px] cursor-pointer transition-colors ${isCompare ? "text-Primary" : "text-[#BDBDBD] hover:text-blue-500"}`}
+              onClick={handleCompare}
             />
           </div>
         </div>

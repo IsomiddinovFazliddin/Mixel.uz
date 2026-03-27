@@ -1,11 +1,15 @@
 import { Button } from "@mui/material";
-import React, { useContext } from "react";
-import { IoClose } from "react-icons/io5";
+import React, { useContext, useEffect, useState } from "react";
+import { IoClose, IoEyeOutline } from "react-icons/io5";
 import { DataContext } from "../App";
-import { userUpdate } from "../services";
+import { userData, userUpdate } from "../services";
+import { toast } from "react-toastify";
+import { FaRegEyeSlash } from "react-icons/fa";
 
 function UserModal() {
   const {
+    profilData,
+    setProfilData,
     userModal,
     setUserModal,
     userName,
@@ -19,6 +23,17 @@ function UserModal() {
     password,
     setPassword,
   } = useContext(DataContext);
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (profilData?.username) {
+      setUserName(profilData?.username || "");
+      setFirstName(profilData?.first_name || "");
+      setLastName(profilData?.last_name || "");
+      setPhoneNumber(profilData?.phone_number || "");
+    }
+  }, [profilData]);
 
   return (
     <div
@@ -36,11 +51,6 @@ function UserModal() {
         {/* Yopish tugmasi */}
         <button
           onClick={() => {
-            setUserName("");
-            setFirstName("");
-            setLastName("");
-            setPhoneNumber("");
-            setPassword("");
             setUserModal(false);
           }}
           className="absolute top-4 right-4 p-1 rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-black"
@@ -59,7 +69,11 @@ function UserModal() {
               phoneNumber,
               password,
             ).then((data) => {
-              console.log(data);
+              userData().then((newData) => {
+                setProfilData(newData);
+              });
+              setUserModal(false);
+              toast.success("Ma'lumotlar yangilandi");
             });
           }}
         >
@@ -141,16 +155,29 @@ function UserModal() {
               <label className="text-sm font-semibold text-gray-700 ml-1">
                 Password
               </label>
-              <input
-                onInput={(e) => {
-                  setPassword(e.target.value);
-                }}
-                value={password}
-                type="password"
-                placeholder="••••••••"
-                required
-                className="w-full border border-gray-200 bg-gray-50/50 px-4 py-2.5 rounded-lg focus:bg-white focus:border-[#ED3729] focus:ring-2 focus:ring-[#ED3729]/10 outline-none transition-all"
-              />
+              <div className="relative">
+                <input
+                  onInput={(e) => {
+                    setPassword(e.target.value);
+                  }}
+                  value={password}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="********"
+                  required
+                  className="w-full border border-gray-200 bg-gray-50/50 px-4 py-2.5 rounded-lg focus:bg-white focus:border-[#ED3729] focus:ring-2 focus:ring-[#ED3729]/10 outline-none transition-all"
+                />
+                {showPassword ? (
+                  <FaRegEyeSlash
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(false)}
+                  />
+                ) : (
+                  <IoEyeOutline
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer"
+                    onClick={() => setShowPassword(true)}
+                  />
+                )}
+              </div>
             </div>
           </div>
 

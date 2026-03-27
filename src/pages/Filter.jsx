@@ -17,18 +17,26 @@ import { HiMiniBars3BottomLeft } from "react-icons/hi2";
 import { IoIosArrowDown, IoIosArrowForward, IoIosClose } from "react-icons/io";
 import { IoGridOutline } from "react-icons/io5";
 import { TbCoins, TbFilterSearch, TbTrash } from "react-icons/tb";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import Product from "../components/Product";
 import { DataContext } from "../App";
 import FilterProduct from "../components/FilterProduct";
 
 function Filter() {
-  const { productData } = useContext(DataContext);
+  const { productData, categoryData } = useContext(DataContext);
   const [priceRange, setPriceRange] = useState([300000, 103300000]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [gridList, setGridList] = useState("grid");
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const categoryId = searchParams.get("category");
 
+  const activeCategory = categoryData?.find((c) => c.id == categoryId);
+
+  const filteredProducts = categoryId
+    ? productData?.filter((item) => item?.category == categoryId)
+    : productData;
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -53,6 +61,27 @@ function Filter() {
           <IoIosClose size={32} />
         </IconButton>
       </div>
+
+      {/* 0. Categories */}
+      <Accordion defaultExpanded sx={{ border: "none", boxShadow: "none", "&:before": { display: "none" } }}>
+        <AccordionSummary expandIcon={<IoIosArrowDown />}>
+          <Typography sx={{ fontWeight: 600, fontSize: '15px' }}>Categories</Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ px: 1 }}>
+          {categoryData?.map((cat) => (
+            <div
+              key={cat.id}
+              onClick={() => navigate(`/filter?category=${cat.id}`)}
+              className={`flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer transition-colors ${
+                categoryId == cat.id ? "bg-red-50 text-Primary" : "hover:bg-gray-50 text-[#202020]"
+              }`}
+            >
+              <span className="text-sm">{cat.name}</span>
+              <IoIosArrowForward className="text-gray-400 text-xs" />
+            </div>
+          ))}
+        </AccordionDetails>
+      </Accordion>
 
       {/* 1. Price Filter */}
       <Accordion defaultExpanded sx={{ border: "none", boxShadow: "none", "&:before": { display: "none" } }}>
@@ -187,7 +216,9 @@ function Filter() {
 
         {/* Title and Controls */}
         <div className="flex flex-col gap-4 mb-6">
-          <h1 className="font-bold text-[22px] md:text-[28px] text-[#202020]">Smartphones in Tashkent</h1>
+          <h1 className="font-bold text-[22px] md:text-[28px] text-[#202020]">
+          {activeCategory ? activeCategory.name : "Smartphones in Tashkent"}
+        </h1>
 
           <div className="flex items-center justify-between border-b border-t md:border-none py-3 md:py-0">
             <div className="flex items-center gap-2 md:gap-8">
@@ -244,7 +275,7 @@ function Filter() {
                 ? "grid-cols-1" 
                 : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
             }`}>
-              {productData?.map((item, i) => (
+              {filteredProducts?.map((item, i) => (
                 gridList === "list" 
                   ? <FilterProduct key={i} item={item} /> 
                   : <Product key={i} item={item} />

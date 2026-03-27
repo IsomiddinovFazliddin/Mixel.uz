@@ -297,8 +297,10 @@ function Cart() {
 
                 <div className="space-y-5 mb-8">
                   <div className="flex justify-between text-[#626364] font-medium">
-                    <span>Items (4)</span>
-                    <span className="text-[#202020]">5 262 000 cум</span>
+                    <span>Items ({cartData?.length || 0})</span>
+                    <span className="text-[#202020]">
+                      {cartData?.reduce((sum, item) => sum + (item?.product_price * item?.amount || 0), 0).toLocaleString()} сум
+                    </span>
                   </div>
                   <div className="flex justify-between text-[#626364] font-medium">
                     <span>Delivery</span>
@@ -312,7 +314,7 @@ function Cart() {
                       Total amount:
                     </span>
                     <span className="text-2xl font-semibold text-[#ED3729] leading-none">
-                      5 262 000 cум
+                      {cartData?.reduce((sum, item) => sum + (item?.product_price * item?.amount || 0), 0).toLocaleString()} сум
                     </span>
                   </div>
                 </div>

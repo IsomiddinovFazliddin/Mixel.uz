@@ -86,7 +86,12 @@ function Home() {
                   })
                 : [1, 1, 1, 1].map((item, i) => {
                     return (
-                      <Skeleton key={i} variant="rounded" width={300} height={250} />
+                      <Skeleton
+                        key={i}
+                        variant="rounded"
+                        width={300}
+                        height={250}
+                      />
                     );
                   })}
             </div>
@@ -106,11 +111,11 @@ function Home() {
                           key={i}
                           className="flex gap-5 border border-[#F2F2F2] rounded-sm mr-5 cursor-pointer"
                           onClick={() => {
-                            navigate("/filter");
+                            navigate(`/filter?category=${item.id}`);
                           }}
                         >
                           <h4 className="p-5 pr-0 font-medium text-[20px] text-[#202020]">
-                            Computers
+                            {item?.name}
                           </h4>
                           <div className="imgs w-38 h-34 object-cover">
                             <img
@@ -283,7 +288,12 @@ function Home() {
                   })
                 : [1, 1, 1, 1].map((item, i) => {
                     return (
-                      <Skeleton key={i} variant="rounded" width={300} height={250} />
+                      <Skeleton
+                        key={i}
+                        variant="rounded"
+                        width={300}
+                        height={250}
+                      />
                     );
                   })}
             </div>
@@ -323,10 +333,15 @@ function Home() {
                       return <Product key={i} item={item} />;
                     })
                   : [1, 1, 1, 1].map((item, i) => {
-                    return (
-                      <Skeleton key={i} variant="rounded" width={300} height={250} />
-                    );
-                  })}
+                      return (
+                        <Skeleton
+                          key={i}
+                          variant="rounded"
+                          width={300}
+                          height={250}
+                        />
+                      );
+                    })}
               </div>
             </div>
           </div>
@@ -355,7 +370,12 @@ function Home() {
                     })
                   : [1, 1, 1, 1, 1].map((item, i) => {
                       return (
-                        <Skeleton key={i} variant="rounded" width={250} height={60} />
+                        <Skeleton
+                          key={i}
+                          variant="rounded"
+                          width={250}
+                          height={60}
+                        />
                       );
                     })}
               </div>

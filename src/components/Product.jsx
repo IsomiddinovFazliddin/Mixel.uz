@@ -7,13 +7,29 @@ import { DataContext } from "../App";
 import { toast } from "react-toastify";
 
 function Product({ item }) {
-  const { tokenTitle, likeData, setLikeData, cartData, setCartData } =
+  const { tokenTitle, likeData, setLikeData, cartData, setCartData, compareData, setCompareData } =
     useContext(DataContext);
 
   const navigate = useNavigate();
 
   const isLiked = likeData?.some((like) => like.product.id == item.id);
   const isCart = cartData?.some((cart) => cart.product == item.id);
+  const isCompare = compareData?.some((c) => c.id === item.id);
+
+  const handleCompare = (e) => {
+    e.preventDefault();
+    if (isCompare) {
+      setCompareData((prev) => prev.filter((c) => c.id !== item.id));
+      toast.info("Taqqoslashdan olib tashlandi");
+    } else {
+      if (compareData.length >= 4) {
+        toast.warning("Maksimal 4 ta mahsulot taqqoslanadi");
+        return;
+      }
+      setCompareData((prev) => [...prev, item]);
+      toast.success("Taqqoslashga qo'shildi");
+    }
+  };
 
   const handlLiked = (e) => {
     e.preventDefault();
@@ -110,10 +126,8 @@ function Product({ item }) {
         <span className="text-[#E0E0E0]">|</span>
         <div className="flex-1 flex justify-center">
           <RiScales3Fill
-            className="text-[19px] md:text-[21px] text-[#BDBDBD] transition-all"
-            onClick={(e) => {
-              e.preventDefault();
-            }}
+            className={`text-[19px] md:text-[21px] transition-all duration-300 ease-in-out ${isCompare ? "text-Primary" : "text-[#BDBDBD]"}`}
+            onClick={handleCompare}
           />
         </div>
       </div>
