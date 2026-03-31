@@ -53,7 +53,7 @@ function FilterProduct({ item }) {
     } else {
       addToLiked(item.id).then((data) => {
         if (data) {
-          setLikeData([...likeData, { id: data.id, product: { id: item.id } }]);
+          setLikeData([...likeData, { id: data.id, product: item }]);
           toast.success("Yoqtirganlarga qo'shildi");
         }
       });

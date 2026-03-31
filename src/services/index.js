@@ -87,20 +87,17 @@ export const getBrands = () => {
     });
 };
 
-export const getProducts = () => {
+export const getProducts = (params = {}) => {
+  const query = new URLSearchParams(params).toString();
   const requestOptions = {
     method: "GET",
     redirect: "follow",
   };
 
-  return fetch(`${baseURL}products/`, requestOptions)
+  return fetch(`${baseURL}products/${query ? "?" + query : ""}`, requestOptions)
     .then((response) => response.json())
-    .then((result) => {
-      return result;
-    })
-    .catch((error) => {
-      return error;
-    });
+    .then((result) => result)
+    .catch((error) => error);
 };
 
 export const productDetail = (id) => {
@@ -336,4 +333,49 @@ export const userUpdate = (userName, firstName, lastName, phoneNumber, password)
     .catch((error) => {
       return error;
     });
+};
+
+export const updateCartAmount = (id, amount) => {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+
+  const requestOptions = {
+    method: "PATCH",
+    headers: myHeaders,
+    body: JSON.stringify({ amount }),
+    redirect: "follow",
+  };
+
+  return fetch(`${baseURL}cart-items/${id}/`, requestOptions)
+    .then((response) => response.json())
+    .catch((error) => error);
+};
+
+export const getProperties = (productId) => {
+  const requestOptions = {
+    method: "GET",
+    redirect: "follow",
+  };
+
+  return fetch(`${baseURL}properties/?property_type=${productId}`, requestOptions)
+    .then((response) => response.json())
+    .catch((error) => error);
+};
+
+export const createCheckout = (cartItemIds) => {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+  myHeaders.append("Authorization", `Bearer ${getToken()}`);
+
+  const requestOptions = {
+    method: "POST",
+    headers: myHeaders,
+    body: JSON.stringify({ cart_item_ids: cartItemIds }),
+    redirect: "follow",
+  };
+
+  return fetch(`${baseURL}checkout/items/`, requestOptions)
+    .then((response) => response.json())
+    .catch((error) => error);
 };

@@ -11,6 +11,9 @@ import {
 } from "@mui/material";
 import { IoIosArrowForward } from "react-icons/io";
 import { Link } from "react-router-dom";
+import { RiDeleteBin6Line } from "react-icons/ri";
+import { deletCart, updateCartAmount, createCheckout } from "../services";
+import { toast } from "react-toastify";
 import { DataContext } from "../App";
 
 // Fokus bo'lganda outline rangini o'zgartiruvchi theme
@@ -59,9 +62,56 @@ const regions = [
 const cities = ["Toshkent sh.", "Samarqand", "Buxoro", "Andijon", "Namangan"];
 
 function Cart() {
-  const { cartData } = useContext(DataContext);
+  const { cartData, setCartData, tokenTitle } = useContext(DataContext);
   const [region, setRegion] = useState("");
   const [city, setCity] = useState("");
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
+
+  const handleCheckout = () => {
+    if (!tokenTitle) {
+      toast.error("Avval tizimga kiring");
+      return;
+    }
+    if (!cartData?.length) {
+      toast.error("Savat bo'sh");
+      return;
+    }
+    setCheckoutLoading(true);
+    const ids = cartData.map((item) => item.id);
+    createCheckout(ids).then((data) => {
+      setCheckoutLoading(false);
+      // Xatolik yo'q bo'lsa muvaffaqiyatli
+      if (data && !data.detail && !data?.cart_item_ids) {
+        toast.success("Buyurtma muvaffaqiyatli yaratildi");
+        // Barcha cart itemlarni API dan o'chirish
+        Promise.all(
+          cartData.filter((item) => item.id).map((item) => deletCart(item.id))
+        ).then(() => {
+          setCartData([]);
+        });
+      } else {
+        const errMsg = data?.detail || data?.cart_item_ids?.[0] || "Xatolik yuz berdi";
+        toast.error(errMsg);
+      }
+    });
+  };
+
+  const handleDelete = (item) => {
+    deletCart(item.id).then(() => {
+      setCartData((prev) => prev.filter((c) => c.id !== item.id));
+      toast.info("Savatdan olib tashlandi");
+    });
+  };
+
+  const handleAmount = (item, delta) => {
+    const newAmount = item.amount + delta;
+    if (newAmount < 1) return;
+    updateCartAmount(item.id, newAmount).then((data) => {
+      setCartData((prev) =>
+        prev.map((c) => (c.id === item.id ? { ...c, amount: newAmount } : c))
+      );
+    });
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -108,25 +158,41 @@ function Cart() {
                       return (
                         <div
                           key={i}
-                          className="flex flex-col sm:flex-row items-center gap-5 p-5 bg-[#F9F9F9] rounded-2xl border border-gray-100"
+                          className="flex flex-col sm:flex-row items-center gap-5 p-3 bg-[#F9F9F9] rounded-2xl border border-gray-100"
                         >
                           <img
-                            className="w-20 h-24 object-contain bg-white rounded-xl p-2 shadow-sm"
+                            className="w-18 h-20 object-contain bg-white rounded-xl p-2 shadow-sm"
                             src={item?.main_image}
                             alt="Product"
                           />
                           <div className="flex-1">
                             <h4 className="font-semibold text-lg text-[#202020]">
-                              {item?.product_name}
+                              {item?.product_name.slice(0, 20)}
                             </h4>
                           </div>
-                          <div className="flex items-center justify-between w-full sm:w-auto gap-12 border-t sm:border-t-0 pt-4 sm:pt-0">
-                            <span className="text-gray-400 font-bold text-lg">
-                              {item?.amount}x
-                            </span>
-                            <span className="font-bold text-xl text-[#202020] whitespace-nowrap">
+                          <div className="flex items-center justify-between w-full sm:w-auto gap-5 border-t sm:border-t-0 pt-4 sm:pt-0">
+                            {/* Miqdor tugmalari */}
+                            <div className="flex items-center gap-2 border border-gray-200 rounded-lg overflow-hidden">
+                              <button
+                                onClick={() => handleAmount(item, -1)}
+                                className="w-8 h-8 flex items-center justify-center text-[18px] font-bold text-gray-500 hover:bg-gray-100 transition-colors"
+                              >
+                                −
+                              </button>
+                              <span className="w-8 text-center font-bold text-[16px] text-[#202020]">
+                                {item?.amount}
+                              </span>
+                              <button
+                                onClick={() => handleAmount(item, 1)}
+                                className="w-8 h-8 flex items-center justify-center text-[18px] font-bold text-gray-500 hover:bg-gray-100 transition-colors"
+                              >
+                                +
+                              </button>
+                            </div>
+                            <span className="font-bold text-[16px] text-[#202020] whitespace-nowrap">
                               {item?.product_price} cум
                             </span>
+                            <button onClick={() => handleDelete(item)} className="w-6 h-6 flex items-center justify-center rounded-sm transition-all duration-300 ease-in-out cursor-pointer hover:bg-red-200"><RiDeleteBin6Line /></button>
                           </div>
                         </div>
                       );
@@ -322,6 +388,8 @@ function Cart() {
                 <Button
                   variant="contained"
                   fullWidth
+                  onClick={handleCheckout}
+                  disabled={checkoutLoading}
                   sx={{
                     backgroundColor: "#ED3729",
                     py: 2,
@@ -336,7 +404,7 @@ function Cart() {
                     },
                   }}
                 >
-                  Checkout now
+                  {checkoutLoading ? "Yuklanmoqda..." : "Checkout now"}
                 </Button>
 
                 <p className="text-[11px] text-gray-400 mt-6 text-center leading-relaxed font-medium">

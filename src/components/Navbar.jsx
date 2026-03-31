@@ -6,10 +6,11 @@ import { HiOutlineMicrophone } from "react-icons/hi";
 import { IoCallOutline, IoLocationOutline } from "react-icons/io5";
 import { RiScalesLine } from "react-icons/ri";
 import { TfiMenuAlt } from "react-icons/tfi";
+import { TbLogout2 } from "react-icons/tb";
 import { DataContext } from "../App";
 import { Link, useNavigate } from "react-router-dom";
 import { getToken, removeToken } from "../services/token";
-import { TbLogout2 } from "react-icons/tb";
+import CategoryModal from "./CategoryModal";
 
 function Navbar() {
   const {
@@ -21,6 +22,7 @@ function Navbar() {
     setTokenTitle,
     setLikeData,
     cartData,
+    setCartData,
     productData,
     compareData,
   } = useContext(DataContext);
@@ -51,7 +53,7 @@ function Navbar() {
   ).slice(0, 8);
 
   return (
-    <nav className="w-full bg-white shadow-sm">
+    <nav className="w-full bg-white shadow-sm relative z-[1000]">
       {/* TOP NAVBAR */}
       <div className="w-full bg-Primary hidden md:block">
         <div className="container mx-auto flex justify-between items-center py-2 px-4 text-white text-[13px]">
@@ -196,6 +198,7 @@ function Navbar() {
                         removeToken();
                         setModal(false);
                         setLikeData([]);
+                        setCartData([]);
                         setTokenTitle(null);
                         navigate("/");
                       }}
@@ -291,6 +294,12 @@ function Navbar() {
           </ul>
         </div>
       </div>
+
+      {/* CATEGORY MEGA MENU */}
+      <CategoryModal
+        isOpen={categoryModal}
+        onClose={() => setCategoryModal(false)}
+      />
     </nav>
   );
 }

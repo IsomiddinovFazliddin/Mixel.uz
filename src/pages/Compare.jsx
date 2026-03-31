@@ -1,12 +1,11 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoTrashOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { DataContext } from "../App";
 import { RiShoppingCart2Fill } from "react-icons/ri";
-import { addToCart, deletCart } from "../services";
+import { addToCart } from "../services";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 
 function Compare() {
   const { compareData, setCompareData, cartData, setCartData, tokenTitle } =
@@ -24,44 +23,59 @@ function Compare() {
       navigate("/signup");
       return;
     }
-    const cartItem = cartData?.find((c) => c.product === item.id);
-    if (cartItem) {
-      deletCart(cartItem.id).then(() => {
-        setCartData((prev) => prev.filter((c) => c.product !== item.id));
-        toast.info("Savatdan olib tashlandi");
-      });
-    } else {
-      addToCart(item.id, 1).then((data) => {
-        setCartData((prev) => [...prev, data]);
-        toast.success("Savatga qo'shildi");
-      });
+    if (cartData?.some((c) => c.product === item.id)) {
+      toast.info("Mahsulot allaqachon savatda");
+      return;
     }
+    addToCart(item.id, 1).then((data) => {
+      setCartData((prev) => [...prev, data]);
+      toast.success("Savatga qo'shildi");
+    });
   };
 
-  // Collect all unique spec keys from all products
-  const specKeys = [
-    ...new Set(
-      compareData.flatMap((item) =>
-        Object.keys(item.specifications || {})
-      )
-    ),
-  ];
+  // compareData ichidagi properties dan barcha unique row larni yig'ish
+  // Har bir property: { title, value: [{type, value}] }
+  // Jadval satrlari: title + har bir type alohida qator
+  const buildRows = () => {
+    const rows = []; // [{label, key}]
+    const seen = new Set();
+
+    compareData.forEach((item) => {
+      (item.properties || []).forEach((prop) => {
+        const title = prop.title;
+        if (Array.isArray(prop.value)) {
+          prop.value.forEach((v) => {
+            const key = `${title}__${v.type}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              rows.push({ label: v.type, propTitle: title, propType: v.type });
+            }
+          });
+        }
+      });
+    });
+    return rows;
+  };
+
+  const getCellValue = (item, propTitle, propType) => {
+    const prop = (item.properties || []).find((p) => p.title === propTitle);
+    if (!prop || !Array.isArray(prop.value)) return "—";
+    const v = prop.value.find((v) => v.type === propType);
+    return v?.value || "—";
+  };
+
+  const rows = buildRows();
 
   return (
     <div className="min-h-screen bg-[#fafafa]">
       <div className="container mx-auto px-4 py-6">
-        {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-6 text-sm text-[#626364]">
-          <Link to="/" className="hover:text-Primary transition-colors">
-            Home
-          </Link>
+          <Link to="/" className="hover:text-Primary transition-colors">Home</Link>
           <IoIosArrowForward />
           <span className="text-[#202020] font-medium">Compare</span>
         </div>
 
-        <h1 className="font-bold text-[24px] text-[#202020] mb-6">
-          Compare products
-        </h1>
+        <h1 className="font-bold text-[24px] text-[#202020] mb-6">Compare products</h1>
 
         {compareData.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
@@ -71,10 +85,7 @@ function Compare() {
               className="w-60 mb-4"
             />
             <p className="text-[#909090] text-lg">No products to compare yet.</p>
-            <Link
-              to="/filter"
-              className="mt-4 px-6 py-2 bg-Primary text-white rounded-lg hover:bg-red-700 transition-colors"
-            >
+            <Link to="/filter" className="mt-4 px-6 py-2 bg-Primary text-white rounded-lg hover:bg-red-700 transition-colors">
               Browse products
             </Link>
           </div>
@@ -83,14 +94,9 @@ function Compare() {
             <table className="border-separate border-spacing-x-3">
               <thead>
                 <tr>
-                  <td className="w-32 p-3 font-semibold text-[#909090] text-sm uppercase tracking-wide">
-                    Product
-                  </td>
+                  <td className="w-36 p-3 font-semibold text-[#909090] text-xs uppercase tracking-wide">Product</td>
                   {compareData.map((item) => (
-                    <td
-                      key={item.id}
-                      className="p-3 border border-[#F2F2F2] bg-white text-center min-w-52 max-w-64 w-64"
-                    >
+                    <td key={item.id} className="p-3 border border-[#F2F2F2] bg-white text-center w-64 min-w-52">
                       <div className="relative">
                         <button
                           onClick={() => removeFromCompare(item.id)}
@@ -100,16 +106,16 @@ function Compare() {
                         </button>
                         <Link to={`/productdetails/${item.id}`}>
                           <img
-                            src={item?.images?.[0]?.image}
-                            alt={item?.details}
+                            src={item?.main_image || item?.images?.[0]?.image}
+                            alt={item?.name}
                             className="w-28 h-28 object-contain mx-auto mb-3"
                           />
-                          <h4 className="font-semibold text-[14px] text-[#202020] line-clamp-2 mb-2">
-                            {item?.details}
+                          <h4 className="font-semibold text-[13px] text-[#202020] line-clamp-2 mb-2">
+                            {item?.name}
                           </h4>
                         </Link>
-                        <p className="font-bold text-[16px] text-Primary mb-3">
-                          {item?.price?.toLocaleString()} сум
+                        <p className="font-bold text-[15px] text-Primary mb-3">
+                          {Number(item?.price).toLocaleString()} сум
                         </p>
                         <button
                           onClick={(e) => handleCart(e, item)}
@@ -120,9 +126,7 @@ function Compare() {
                           }`}
                         >
                           <RiShoppingCart2Fill />
-                          {cartData?.some((c) => c.product === item.id)
-                            ? "In cart"
-                            : "Add to cart"}
+                          {cartData?.some((c) => c.product === item.id) ? "In cart" : "Add to cart"}
                         </button>
                       </div>
                     </td>
@@ -130,46 +134,42 @@ function Compare() {
                 </tr>
               </thead>
               <tbody>
-                {/* Price row */}
+                {/* Price */}
                 <tr className="bg-gray-50">
-                  <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2] w-32">
-                    Price
-                  </td>
+                  <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2]">Price</td>
                   {compareData.map((item) => (
-                    <td
-                      key={item.id}
-                      className="p-3 text-center text-sm border border-[#F2F2F2] font-medium text-Primary"
-                    >
-                      {item?.price?.toLocaleString()} сум
+                    <td key={item.id} className="p-3 text-center text-sm border border-[#F2F2F2] font-medium text-Primary">
+                      {Number(item?.price).toLocaleString()} сум
                     </td>
                   ))}
                 </tr>
-                {/* Brand row */}
+                {/* Category */}
                 <tr>
-                  <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2] w-32">
-                    Brand
-                  </td>
+                  <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2]">Category</td>
                   {compareData.map((item) => (
-                    <td
-                      key={item.id}
-                      className="p-3 text-center text-sm border border-[#F2F2F2] text-[#626364]"
-                    >
-                      {item?.brand || "—"}
+                    <td key={item.id} className="p-3 text-center text-sm border border-[#F2F2F2] text-[#626364]">
+                      {item?.category_name || "—"}
                     </td>
                   ))}
                 </tr>
-                {/* Dynamic spec rows */}
-                {specKeys.map((key) => (
-                  <tr key={key} className="even:bg-gray-50">
-                    <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2] capitalize w-32">
-                      {key}
+                {/* Country */}
+                <tr className="bg-gray-50">
+                  <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2]">Country</td>
+                  {compareData.map((item) => (
+                    <td key={item.id} className="p-3 text-center text-sm border border-[#F2F2F2] text-[#626364]">
+                      {item?.country || "—"}
+                    </td>
+                  ))}
+                </tr>
+                {/* Dynamic property rows */}
+                {rows.map((row, i) => (
+                  <tr key={`${row.propTitle}-${row.propType}`} className={i % 2 === 0 ? "" : "bg-gray-50"}>
+                    <td className="p-3 font-semibold text-sm text-[#202020] border border-[#F2F2F2]">
+                      {row.label}
                     </td>
                     {compareData.map((item) => (
-                      <td
-                        key={item.id}
-                        className="p-3 text-center text-sm border border-[#F2F2F2] text-[#626364]"
-                      >
-                        {item.specifications?.[key] || "—"}
+                      <td key={item.id} className="p-3 text-center text-sm border border-[#F2F2F2] text-[#626364]">
+                        {getCellValue(item, row.propTitle, row.propType)}
                       </td>
                     ))}
                   </tr>

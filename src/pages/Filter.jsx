@@ -21,9 +21,10 @@ import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import Product from "../components/Product";
 import { DataContext } from "../App";
 import FilterProduct from "../components/FilterProduct";
+import { getProducts } from "../services";
 
 function Filter() {
-  const { productData, categoryData } = useContext(DataContext);
+  const { productData, categoryData, brand } = useContext(DataContext);
   const [priceRange, setPriceRange] = useState([300000, 103300000]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -31,12 +32,24 @@ function Filter() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const categoryId = searchParams.get("category");
+  const brandId = searchParams.get("brand");
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const activeCategory = categoryData?.find((c) => c.id == categoryId);
+  const activeBrand = brand?.find((b) => b.id == brandId);
 
-  const filteredProducts = categoryId
-    ? productData?.filter((item) => item?.category == categoryId)
-    : productData;
+  useEffect(() => {
+    setLoading(true);
+    const params = {};
+    if (categoryId) params.category = categoryId;
+    if (brandId) params.brand = brandId;
+
+    getProducts(params).then((data) => {
+      setFilteredProducts(data.results || []);
+      setLoading(false);
+    });
+  }, [categoryId, brandId]);
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, []);
@@ -217,7 +230,7 @@ function Filter() {
         {/* Title and Controls */}
         <div className="flex flex-col gap-4 mb-6">
           <h1 className="font-bold text-[22px] md:text-[28px] text-[#202020]">
-          {activeCategory ? activeCategory.name : "Smartphones in Tashkent"}
+          {activeCategory ? activeCategory.name : activeBrand ? activeBrand.name : "Smartphones in Tashkent"}
         </h1>
 
           <div className="flex items-center justify-between border-b border-t md:border-none py-3 md:py-0">

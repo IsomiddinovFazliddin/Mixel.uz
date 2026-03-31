@@ -9,9 +9,13 @@ import { RxDividerVertical } from "react-icons/rx";
 import { SlEarphonesAlt } from "react-icons/sl";
 import { TbTruckDelivery } from "react-icons/tb";
 import { Link, useParams, useNavigate } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Autoplay } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/navigation";
 import { DataContext } from "../App";
 import Product from "../components/Product";
-import { productDetail, addToCart, addToLiked, deletCart, deletLiked } from "../services";
+import { productDetail, addToCart, addToLiked, deletCart, deletLiked, getProperties, getProducts } from "../services";
 import { toast } from "react-toastify";
 
 function ProductDetails() {
@@ -26,6 +30,8 @@ function ProductDetails() {
   const [product, setProduct] = useState(null);
   const [mainImg, setMainImg] = useState("");
   const [loading, setLoading] = useState(true);
+  const [properties, setProperties] = useState([]);
+  const [similarProducts, setSimilarProducts] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -48,8 +54,21 @@ function ProductDetails() {
           setMainImg(data.images[0].image);
         }
         setLoading(false);
+        // Shu kategoriyaga tegishli mahsulotlarni olish
+        if (data?.category) {
+          getProducts({ category: data.category }).then((res) => {
+            const results = (res.results || []).filter((p) => p.id != id);
+            setSimilarProducts(results);
+          });
+        }
       }
     }).catch(() => setLoading(false));
+
+    getProperties(id).then((data) => {
+      if (Array.isArray(data)) setProperties(data);
+      else if (data?.results) setProperties(data.results);
+    });
+
     return () => { isMounted = false; };
   }, [id]);
 
@@ -63,13 +82,11 @@ function ProductDetails() {
     if (likedItem) {
       deletLiked(likedItem.id).then(() => {
         setLikeData(likeData.filter((like) => like.product.id != id));
-        toast.info("Yoqtirilganlardan olib tashlandi");
       });
     } else {
       addToLiked(id).then((data) => {
         if (data) {
-          setLikeData([...likeData, { id: data.id, product: { id: parseInt(id) } }]);
-          toast.success("Yoqtirganlarga qo'shildi");
+          setLikeData([...likeData, { id: data.id, product: product }]);
         }
       });
     }
@@ -85,12 +102,10 @@ function ProductDetails() {
     if (cartItem) {
       deletCart(cartItem.id).then(() => {
         setCartData((prev) => prev.filter((data) => data.product != id));
-        toast.info("Savatdan olib tashlandi");
       });
     } else {
       addToCart(id, 1).then((data) => {
         setCartData((prev) => [...prev, data]);
-        toast.success("Savatga qo'shildi");
       });
     }
   };
@@ -150,14 +165,12 @@ function ProductDetails() {
                   onClick={() => {
                     if (isCompare) {
                       setCompareData((prev) => prev.filter((c) => c.id != id));
-                      toast.info("Taqqoslashdan olib tashlandi");
                     } else {
                       if (compareData.length >= 4) {
                         toast.warning("Maksimal 4 ta mahsulot taqqoslanadi");
                         return;
                       }
                       setCompareData((prev) => [...prev, product]);
-                      toast.success("Taqqoslashga qo'shildi");
                     }
                   }}
                   className={`text-2xl cursor-pointer transition-colors ${isCompare ? "text-Primary" : "text-gray-300"}`}
@@ -184,15 +197,34 @@ function ProductDetails() {
             </div>
 
             <h3 className="text-xl font-bold mb-4">Technical parameters</h3>
-            <div className="border rounded-xl">
+            <div className="border rounded-xl overflow-hidden">
+              <div className="flex justify-between p-4 border-b bg-gray-50">
+                <span className="text-gray-400 text-sm">Model</span>
+                <span className="font-semibold text-sm">{product?.brand || "N/A"}</span>
+              </div>
               <div className="flex justify-between p-4 border-b">
-                <span className="text-gray-400">Model</span>
-                <span className="font-semibold">{product?.brand || "N/A"}</span>
+                <span className="text-gray-400 text-sm">Status</span>
+                <span className="font-semibold text-sm">New (Original)</span>
               </div>
-              <div className="flex justify-between p-4">
-                <span className="text-gray-400">Status</span>
-                <span className="font-semibold">New (Original)</span>
-              </div>
+              {properties.length > 0
+                ? properties.map((prop, i) => (
+                    <div
+                      key={i}
+                      className={`flex justify-between p-4 ${i < properties.length - 1 ? "border-b" : ""} ${i % 2 === 0 ? "bg-gray-50" : ""}`}
+                    >
+                      <span className="text-gray-400 text-sm">{prop.title}</span>
+                      <span className="font-semibold text-sm text-right max-w-[60%]">{prop.value}</span>
+                    </div>
+                  ))
+                : loading
+                ? [1,2,3].map((_, i) => (
+                    <div key={i} className="flex justify-between p-4 border-b">
+                      <Skeleton width={120} height={20} />
+                      <Skeleton width={100} height={20} />
+                    </div>
+                  ))
+                : null
+              }
             </div>
           </div>
 
@@ -245,11 +277,32 @@ function ProductDetails() {
         {/* OXSHASH MAHSULOTLAR */}
         <div className="mt-20">
           <h2 className="text-2xl font-bold mb-8">Similar Products</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-            {productData?.slice(0, 4).map((item, i) => (
-              <Product key={i} item={item} />
-            ))}
-          </div>
+          {similarProducts.length > 0 ? (
+            <Swiper
+              modules={[Navigation, Autoplay]}
+              navigation
+              autoplay={{ delay: 3000, disableOnInteraction: false }}
+              spaceBetween={20}
+              breakpoints={{
+                0:   { slidesPerView: 1 },
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024:{ slidesPerView: 4 },
+              }}
+            >
+              {similarProducts.map((item, i) => (
+                <SwiperSlide key={i}>
+                  <Product item={item} />
+                </SwiperSlide>
+              ))}
+            </Swiper>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+              {[1,2,3,4].map((_, i) => (
+                <Skeleton key={i} variant="rounded" height={280} />
+              ))}
+            </div>
+          )}
         </div>
 
       </div>

@@ -16,6 +16,7 @@
     "@mui/material": "^7.3.9",
     "@mui/styled-engine-sc": "^7.3.9",
     "@tailwindcss/vite": "^4.2.1",
+    "lucide-react": "^1.7.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-fast-marquee": "^1.6.5",

@@ -37,7 +37,7 @@ function UserModal() {
 
   return (
     <div
-      className={`w-full h-screen flex items-center justify-center fixed top-0 left-0 bg-black/50 z-50 transition-all duration-300 ease-in-out ${
+      className={`w-full h-screen flex items-center justify-center fixed top-0 left-0 bg-black/50 z-[1100] transition-all duration-300 ease-in-out ${
         userModal ? "visible opacity-100" : "invisible opacity-0"
       }`}
       onClick={() => setUserModal(false)} // Modal tashqarisiga bosganda yopilish
@@ -69,11 +69,15 @@ function UserModal() {
               phoneNumber,
               password,
             ).then((data) => {
-              userData().then((newData) => {
-                setProfilData(newData);
-              });
-              setUserModal(false);
-              toast.success("Ma'lumotlar yangilandi");
+              if (data?.username || data?.id) {
+                userData().then((newData) => {
+                  setProfilData(newData);
+                  setUserModal(false);
+                  toast.success("Ma'lumotlar yangilandi");
+                });
+              } else {
+                toast.error("Xatolik yuz berdi");
+              }
             });
           }}
         >

@@ -362,7 +362,8 @@ function Home() {
                       return (
                         <div
                           key={i}
-                          className="w-60 flex justify-center p-5 border border-[#E0E0E0] rounded-sm mr-5 transition-all duration-500 ease-in-out hover:shadow-lg"
+                          onClick={() => navigate(`/filter?brand=${item.id}`)}
+                          className="w-30 flex justify-center p-5 border border-[#E0E0E0] rounded-sm mr-5 transition-all duration-500 ease-in-out hover:shadow-lg cursor-pointer hover:border-Primary"
                         >
                           <img className="w-full " src={item?.image} alt="" />
                         </div>
