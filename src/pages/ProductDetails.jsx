@@ -15,7 +15,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { DataContext } from "../App";
 import Product from "../components/Product";
-import { productDetail, addToCart, addToLiked, deletCart, deletLiked, getProperties, getProducts } from "../services";
+import { productDetail, addToCart, addToLiked, deletCart, deletLiked, getProducts } from "../services";
 import { toast } from "react-toastify";
 
 function ProductDetails() {
@@ -53,8 +53,11 @@ function ProductDetails() {
         if (data?.images?.length > 0) {
           setMainImg(data.images[0].image);
         }
+        // properties to'g'ridan-to'g'ri productDetail dan olish
+        if (data?.properties) {
+          setProperties(data.properties);
+        }
         setLoading(false);
-        // Shu kategoriyaga tegishli mahsulotlarni olish
         if (data?.category) {
           getProducts({ category: data.category }).then((res) => {
             const results = (res.results || []).filter((p) => p.id != id);
@@ -63,11 +66,6 @@ function ProductDetails() {
         }
       }
     }).catch(() => setLoading(false));
-
-    getProperties(id).then((data) => {
-      if (Array.isArray(data)) setProperties(data);
-      else if (data?.results) setProperties(data.results);
-    });
 
     return () => { isMounted = false; };
   }, [id]);
@@ -207,15 +205,27 @@ function ProductDetails() {
                 <span className="font-semibold text-sm">New (Original)</span>
               </div>
               {properties.length > 0
-                ? properties.map((prop, i) => (
-                    <div
-                      key={i}
-                      className={`flex justify-between p-4 ${i < properties.length - 1 ? "border-b" : ""} ${i % 2 === 0 ? "bg-gray-50" : ""}`}
-                    >
-                      <span className="text-gray-400 text-sm">{prop.title}</span>
-                      <span className="font-semibold text-sm text-right max-w-[60%]">{prop.value}</span>
-                    </div>
-                  ))
+                ? properties.flatMap((prop, pi) =>
+                    Array.isArray(prop.value)
+                      ? prop.value.map((v, vi) => (
+                          <div
+                            key={`${pi}-${vi}`}
+                            className={`flex justify-between p-4 border-b last:border-b-0 ${(pi + vi) % 2 === 0 ? "bg-gray-50" : ""}`}
+                          >
+                            <span className="text-gray-400 text-sm">{v.type}</span>
+                            <span className="font-semibold text-sm text-right max-w-[60%]">{v.value}</span>
+                          </div>
+                        ))
+                      : [(
+                          <div
+                            key={pi}
+                            className={`flex justify-between p-4 border-b last:border-b-0 ${pi % 2 === 0 ? "bg-gray-50" : ""}`}
+                          >
+                            <span className="text-gray-400 text-sm">{prop.title}</span>
+                            <span className="font-semibold text-sm text-right max-w-[60%]">{String(prop.value)}</span>
+                          </div>
+                        )]
+                  )
                 : loading
                 ? [1,2,3].map((_, i) => (
                     <div key={i} className="flex justify-between p-4 border-b">

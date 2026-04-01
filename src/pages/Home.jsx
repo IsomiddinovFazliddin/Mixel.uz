@@ -27,45 +27,47 @@ function Home() {
   return (
     <div>
       <header className="py-3">
-        <Swiper
-          spaceBetween={30}
-          centeredSlides={true}
-          autoplay={{
-            delay: 2500,
-            disableOnInteraction: false,
-          }}
-          pagination={{
-            clickable: true,
-          }}
-          navigation={true}
-          modules={[Autoplay, Pagination, Navigation]}
-          className="mySwiper flex"
-        >
-          {gallery?.length > 0 ? (
-            gallery?.map((item, i) => {
-              return (
-                <SwiperSlide>
-                  <div className="container mx-auto bg-[#FAFAFA] flex flex-col md:flex-row items-center justify-between gap-5">
-                    <div className="w-full h-90">
-                      <img
-                        className="w-full h-full object-cover"
-                        src={item?.image}
-                        alt=""
-                      />
+        <div className="container mx-auto">
+          <Swiper
+            spaceBetween={30}
+            centeredSlides={true}
+            autoplay={{
+              delay: 2500,
+              disableOnInteraction: false,
+            }}
+            pagination={{
+              clickable: true,
+            }}
+            navigation={true}
+            modules={[Autoplay, Pagination, Navigation]}
+            className="mySwiper flex relative"
+          >
+            {gallery?.length > 0 ? (
+              gallery?.map((item, i) => {
+                return (
+                  <SwiperSlide>
+                    <div className="container mx-auto bg-[#FAFAFA] flex flex-col md:flex-row items-center justify-between gap-5">
+                      <div className="w-full h-90">
+                        <img
+                          className="w-full h-full object-cover"
+                          src={item?.image}
+                          alt=""
+                        />
+                      </div>
                     </div>
-                  </div>
-                </SwiperSlide>
-              );
-            })
-          ) : (
-            <Skeleton
-              variant="rectangular"
-              width={1200}
-              height={350}
-              className="mx-auto"
-            />
-          )}
-        </Swiper>
+                  </SwiperSlide>
+                );
+              })
+            ) : (
+              <Skeleton
+                variant="rectangular"
+                width={1200}
+                height={350}
+                className="mx-auto"
+              />
+            )}
+          </Swiper>
+        </div>
       </header>
 
       <main className="px-4 md:px-0">

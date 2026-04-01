@@ -10,17 +10,28 @@ body {
   --color-Primary: #ed3729;
 }
 
-.swiper-button-next, .swiper-button-prev{
-    width: 10px;
-    background: #F7F7F7;
-    border-radius: 50%;
-    border: 1px solid #E0E0E0;
+.swiper-button-next,
+.swiper-button-prev {
+  width: 30px !important;
+  height: 30px !important;
+  background: #f7f7f7;
+  border-radius: 50%;
+  border: 1px solid #e0e0e0;
 }
-.swiper-button-next .swiper-navigation-icon{
-    width: 12px;
-    color: #808080;
+.swiper-button-next .swiper-navigation-icon {
+  width: 7px;
+  color: #808080;
 }
-.swiper-button-prev .swiper-navigation-icon{
-    width: 12px;
-    color: #808080;
+.swiper-button-prev .swiper-navigation-icon {
+  width: 7px;
+  color: #808080;
+}
+
+.swiper-pagination-bullet-active {
+  background-color: #ed3729 !important;
+}
+
+.swiper-button-prev{
+    position: absolute;
+    left: 0;
 }
